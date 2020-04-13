@@ -1,14 +1,26 @@
 //! An example of generating julia fractals.
 extern crate image;
+use image::{RgbImage, Rgb, GenericImage, GenericImageView, Pixel};
 extern crate num_complex;
 
+// fn draw_rectangle<P: image::Pixel, Container>(img: image::ImageBuffer<P, Container>, width: u32, height: u32, posx: u32, posy: u32) {
+// for x in 0..width {
+//         for y in 0..height {
+//             img.put_pixel(x, y, image::Rgb([100, 100, 100]))
+//         }
+//     }
+// }
 
-fn draw_rectangle<P: image::Pixel, Container>(img: image::ImageBuffer<P, Container>, width: u32, height: u32, posx: u32, posy: u32) {
+fn draw_rectangle<T>(mut img: T, pixel: T::Pixel, width: u32, height: u32, posx: u32, posy: u32) -> T
+    where T: GenericImage + GenericImageView
+{
     for x in 0..width {
         for y in 0..height {
-            img.put_pixel(x, y, image::Rgb([100, 100, 100]))
+            img.put_pixel(x, y, pixel)
         }
     }
+
+    img
 }
 
 fn main() {
@@ -19,10 +31,10 @@ fn main() {
     // let scaley = 3.0 / imgy as f32;
 
     // Create a new ImgBuf with width: imgx and height: imgy
-    let mut imgbuf = image::ImageBuffer::new(imgx, imgy);
+    let mut imgbuf = RgbImage::new(imgx, imgy);
 
-    // draw_rectangle(imgbuf, 100, 50, 200, 200);
-
+    imgbuf = draw_rectangle(imgbuf, Rgb([100, 100, 100]), 100, 50, 200, 200);
+    
     // Iterate over the coordinates and pixels of the image
     // for (x, y, pixel) in imgbuf.enumerate_pixels_mut() {
     //     let r = (0.3 * x as f32) as u8;
