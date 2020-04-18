@@ -17,6 +17,10 @@ fn draw_rectangle<T>(mut img: T, pixel: T::Pixel, width: u32, height: u32, posx:
 fn draw_circle<T>(mut img: T, pixel: T::Pixel, r: u32, posx: u32, posy: u32) -> T
     where T: GenericImage + GenericImageView
 {
+    // this value is the minimum range limit I found to get a continuous circle :
+    // x = r/2
+    // -> y = sqrt(3) / 2 * r
+    // it might not be optimal
     let range: u32 = ((3.0_f64.sqrt() / 2.0) * r as f64)  as u32;
 
     for i in 0..=range {
