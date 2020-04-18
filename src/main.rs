@@ -1,23 +1,38 @@
-//! An example of generating julia fractals.
 extern crate image;
 use image::{RgbImage, Rgb, GenericImage, GenericImageView, Pixel};
 extern crate num_complex;
-
-// fn draw_rectangle<P: image::Pixel, Container>(img: image::ImageBuffer<P, Container>, width: u32, height: u32, posx: u32, posy: u32) {
-// for x in 0..width {
-//         for y in 0..height {
-//             img.put_pixel(x, y, image::Rgb([100, 100, 100]))
-//         }
-//     }
-// }
 
 fn draw_rectangle<T>(mut img: T, pixel: T::Pixel, width: u32, height: u32, posx: u32, posy: u32) -> T
     where T: GenericImage + GenericImageView
 {
     for x in 0..width {
         for y in 0..height {
-            img.put_pixel(x, y, pixel)
+            img.put_pixel(posx + x, posy + y, pixel)
         }
+    }
+
+    img
+}
+
+fn draw_circle<T>(mut img: T, pixel: T::Pixel, r: u32, posx: u32, posy: u32) -> T
+    where T: GenericImage + GenericImageView
+{
+    let range: u32 = ((3.0_f64.sqrt() / 2.0) * r as f64)  as u32;
+
+    for i in 0..=range {
+        let dx: u32 = i;
+        let dy: u32 = ((r as f64).powi(2) - (dx as f64).powi(2)).sqrt() as u32;
+        img.put_pixel(posx + dx, posy + dy, pixel);
+        img.put_pixel(posx + dx, posy - dy, pixel);
+        img.put_pixel(posx - dx, posy + dy, pixel);
+        img.put_pixel(posx - dx, posy - dy, pixel);
+
+        let dy: u32 = i;
+        let dx: u32 = ((r as f64).powi(2) - (dy as f64).powi(2)).sqrt() as u32;
+        img.put_pixel(posx + dx, posy + dy, pixel);
+        img.put_pixel(posx + dx, posy - dy, pixel);
+        img.put_pixel(posx - dx, posy + dy, pixel);
+        img.put_pixel(posx - dx, posy - dy, pixel);
     }
 
     img
@@ -27,14 +42,12 @@ fn main() {
     let imgx = 800;
     let imgy = 800;
 
-	// let scalex = 3.0 / imgx as f32;
-    // let scaley = 3.0 / imgy as f32;
-
     // Create a new ImgBuf with width: imgx and height: imgy
     let mut imgbuf = RgbImage::new(imgx, imgy);
 
     imgbuf = draw_rectangle(imgbuf, Rgb([100, 100, 100]), 100, 50, 200, 200);
-    
+    imgbuf = draw_circle(imgbuf, Rgb([100, 100, 100]), 200, 300, 300);
+
     // Iterate over the coordinates and pixels of the image
     // for (x, y, pixel) in imgbuf.enumerate_pixels_mut() {
     //     let r = (0.3 * x as f32) as u8;
