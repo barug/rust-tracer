@@ -47,8 +47,30 @@ fn draw_circle<T>(img: &mut T, pixel: T::Pixel, r: u32, position: Coordinates)
         img.put_pixel(position.x - dx, position.y + dy, pixel);
         img.put_pixel(position.x - dx, position.y - dy, pixel);
     }
+}
 
-    img
+fn draw_line<T>(img: &mut T, pixel: T::Pixel, p1: Coordinates, p2: Coordinates)
+    where T: GenericImage + GenericImageView
+{
+    let pdistx: i32 = p2.x as i32 - p1.x as i32;
+    let pdisty: i32 = p2.y as i32 - p1.y as i32;
+    
+    if pdistx.abs() > pdisty.abs() {
+        let tanx: f64 = pdisty as f64 / pdistx as f64;
+        for abs_dx in 0..=pdistx.abs() {
+            let dx = abs_dx * pdistx.signum();
+            let dy: i32 = (dx as f64 * tanx) as i32;
+            img.put_pixel((p1.x as i32 + dx) as u32, (p1.y as i32 + dy) as u32, pixel);
+        }
+    }
+    else {
+        let tany: f64 = pdistx as f64 / pdisty as f64;
+        for abs_dy in 0..=pdisty.abs() {
+            let dy = abs_dy * pdisty.signum();
+            let dx: i32 = (dy as f64 * tany) as i32;
+            img.put_pixel((p1.x as i32 + dx) as u32, (p1.y as i32 + dy) as u32, pixel);
+        }
+    }
 }
 
 fn main() {
