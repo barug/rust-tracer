@@ -2,104 +2,32 @@ extern crate image;
 use image::{RgbImage, Rgb, GenericImage, GenericImageView, Pixel};
 extern crate num_complex;
 
-struct Coordinates {
-    x: u32,
-    y: u32
-}
-
-impl Coordinates {
-    fn new(x: u32, y: u32) -> Coordinates {
-        Coordinates{x: x, y: y}
-    }
-}
-
-fn draw_rectangle<T>(img: &mut T, pixel: T::Pixel, dimensions: Coordinates, position: Coordinates)
-    where T: GenericImage + GenericImageView
-{
-    for dx in 0..dimensions.x {
-        for dy in 0..dimensions.y {
-            img.put_pixel(position.x + dx, position.y + dy, pixel)
-        }
-    }
-}
-
-fn draw_circle<T>(img: &mut T, pixel: T::Pixel, r: u32, position: Coordinates)
-    where T: GenericImage + GenericImageView
-{
-    // this value is the minimum range limit I found to get a continuous circle :
-    // x = r/2
-    // -> y = sqrt(3) / 2 * r
-    // it might not be optimal
-    let range: u32 = ((3.0_f64.sqrt() / 2.0) * r as f64)  as u32;
-
-    for i in 0..=range {
-        let dx: u32 = i;
-        let dy: u32 = ((r as f64).powi(2) - (dx as f64).powi(2)).sqrt() as u32;
-        img.put_pixel(position.x + dx, position.y + dy, pixel);
-        img.put_pixel(position.x + dx, position.y - dy, pixel);
-        img.put_pixel(position.x - dx, position.y + dy, pixel);
-        img.put_pixel(position.x - dx, position.y - dy, pixel);
-
-        let dy: u32 = i;
-        let dx: u32 = ((r as f64).powi(2) - (dy as f64).powi(2)).sqrt() as u32;
-        img.put_pixel(position.x + dx, position.y + dy, pixel);
-        img.put_pixel(position.x + dx, position.y - dy, pixel);
-        img.put_pixel(position.x - dx, position.y + dy, pixel);
-        img.put_pixel(position.x - dx, position.y - dy, pixel);
-    }
-}
-
-fn draw_line<T>(img: &mut T, pixel: T::Pixel, p1: Coordinates, p2: Coordinates)
-    where T: GenericImage + GenericImageView
-{
-    let pdistx: i32 = p2.x as i32 - p1.x as i32;
-    let pdisty: i32 = p2.y as i32 - p1.y as i32;
-    
-    if pdistx.abs() > pdisty.abs() {
-        let tanx: f64 = pdisty as f64 / pdistx as f64;
-        for abs_dx in 0..=pdistx.abs() {
-            let dx = abs_dx * pdistx.signum();
-            let dy: i32 = (dx as f64 * tanx) as i32;
-            img.put_pixel((p1.x as i32 + dx) as u32, (p1.y as i32 + dy) as u32, pixel);
-        }
-    }
-    else {
-        let tany: f64 = pdistx as f64 / pdisty as f64;
-        for abs_dy in 0..=pdisty.abs() {
-            let dy = abs_dy * pdisty.signum();
-            let dx: i32 = (dy as f64 * tany) as i32;
-            img.put_pixel((p1.x as i32 + dx) as u32, (p1.y as i32 + dy) as u32, pixel);
-        }
-    }
-}
-
-fn draw_grid<T>(img: &mut T, pixel: T::Pixel, spacing: usize)
-    where T: GenericImage + GenericImageView
-{
-    let (dimx, dimy) = img.dimensions();
-
-    for x in (0..dimx).step_by(spacing) {
-        for y in 0..dimy {
-            img.put_pixel(x, y, pixel);
-        }
-    }
-
-    for y in (0..dimy).step_by(spacing) {
-        for x in 0..dimx {
-            img.put_pixel(x, y, pixel);
-        }
-    }
-}
+mod drawing_2d;
+mod coordinates;
+use crate::coordinates::Coordinates;
 
 fn main() {
     let imgx = 800;
     let imgy = 800;
 
-    // Create a new ImgBuf with width: imgx and height: imgy
+    // Rgb.from_slice([100, 100, 100],);
+    // // Create a new ImgBuf with width: imgx and height: imgy
     let mut imgbuf = RgbImage::new(imgx, imgy);
+    // let test: Coordinates = Coordinates([10, 20])
 
-    imgbuf = draw_rectangle(imgbuf, Rgb([100, 100, 100]), 100, 50, 200, 200);
-    imgbuf = draw_circle(imgbuf, Rgb([100, 100, 100]), 200, 300, 300);
+    drawing_2d::draw_grid(&mut imgbuf, Rgb([100, 100, 100]), 50);
+
+    drawing_2d::draw_line(&mut imgbuf, Rgb([100, 100, 100]), Coordinates::new(200, 100), Coordinates::new(50, 0));
+    drawing_2d::draw_line(&mut imgbuf, Rgb([100, 100, 100]), Coordinates::new(50, 0), Coordinates::new(200, 100));
+
+    drawing_2d::draw_line(&mut imgbuf, Rgb([100, 100, 100]), Coordinates::new(300, 50), Coordinates::new(100, 250));
+    drawing_2d::draw_line(&mut imgbuf, Rgb([100, 100, 100]), Coordinates::new(100, 250), Coordinates::new(300, 50));
+
+
+    drawing_2d::draw_rectangle(&mut imgbuf, Rgb([100, 100, 100]), Coordinates::new(100, 50), Coordinates::new(200, 200));
+    drawing_2d::draw_circle(&mut imgbuf, Rgb([100, 100, 100]), 200, Coordinates::new(300, 300));
+
+
 
     // Iterate over the coordinates and pixels of the image
     // for (x, y, pixel) in imgbuf.enumerate_pixels_mut() {
