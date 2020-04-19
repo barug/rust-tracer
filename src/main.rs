@@ -73,6 +73,24 @@ fn draw_line<T>(img: &mut T, pixel: T::Pixel, p1: Coordinates, p2: Coordinates)
     }
 }
 
+fn draw_grid<T>(img: &mut T, pixel: T::Pixel, spacing: usize)
+    where T: GenericImage + GenericImageView
+{
+    let (dimx, dimy) = img.dimensions();
+
+    for x in (0..dimx).step_by(spacing) {
+        for y in 0..dimy {
+            img.put_pixel(x, y, pixel);
+        }
+    }
+
+    for y in (0..dimy).step_by(spacing) {
+        for x in 0..dimx {
+            img.put_pixel(x, y, pixel);
+        }
+    }
+}
+
 fn main() {
     let imgx = 800;
     let imgy = 800;
