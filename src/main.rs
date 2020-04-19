@@ -7,7 +7,7 @@ struct Coordinates {
     y: u32
 }
 
-fn draw_rectangle<T>(mut img: T, pixel: T::Pixel, dimensions: Coordinates, position: Coordinates) -> T
+fn draw_rectangle<T>(img: &mut T, pixel: T::Pixel, dimensions: Coordinates, position: Coordinates)
     where T: GenericImage + GenericImageView
 {
     for dx in 0..dimensions.x {
@@ -15,11 +15,9 @@ fn draw_rectangle<T>(mut img: T, pixel: T::Pixel, dimensions: Coordinates, posit
             img.put_pixel(position.x + dx, position.y + dy, pixel)
         }
     }
-
-    img
 }
 
-fn draw_circle<T>(mut img: T, pixel: T::Pixel, r: u32, position: Coordinates) -> T
+fn draw_circle<T>(img: &mut T, pixel: T::Pixel, r: u32, position: Coordinates)
     where T: GenericImage + GenericImageView
 {
     // this value is the minimum range limit I found to get a continuous circle :
