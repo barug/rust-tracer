@@ -7,6 +7,12 @@ struct Coordinates {
     y: u32
 }
 
+impl Coordinates {
+    fn new(x: u32, y: u32) -> Coordinates {
+        Coordinates{x: x, y: y}
+    }
+}
+
 fn draw_rectangle<T>(img: &mut T, pixel: T::Pixel, dimensions: Coordinates, position: Coordinates)
     where T: GenericImage + GenericImageView
 {
