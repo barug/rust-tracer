@@ -2,19 +2,24 @@ extern crate image;
 use image::{RgbImage, Rgb, GenericImage, GenericImageView, Pixel};
 extern crate num_complex;
 
-fn draw_rectangle<T>(mut img: T, pixel: T::Pixel, width: u32, height: u32, posx: u32, posy: u32) -> T
+struct Coordinates {
+    x: u32,
+    y: u32
+}
+
+fn draw_rectangle<T>(mut img: T, pixel: T::Pixel, dimensions: Coordinates, position: Coordinates) -> T
     where T: GenericImage + GenericImageView
 {
-    for x in 0..width {
-        for y in 0..height {
-            img.put_pixel(posx + x, posy + y, pixel)
+    for dx in 0..dimensions.x {
+        for dy in 0..dimensions.y {
+            img.put_pixel(position.x + dx, position.y + dy, pixel)
         }
     }
 
     img
 }
 
-fn draw_circle<T>(mut img: T, pixel: T::Pixel, r: u32, posx: u32, posy: u32) -> T
+fn draw_circle<T>(mut img: T, pixel: T::Pixel, r: u32, position: Coordinates) -> T
     where T: GenericImage + GenericImageView
 {
     // this value is the minimum range limit I found to get a continuous circle :
@@ -26,17 +31,17 @@ fn draw_circle<T>(mut img: T, pixel: T::Pixel, r: u32, posx: u32, posy: u32) -> 
     for i in 0..=range {
         let dx: u32 = i;
         let dy: u32 = ((r as f64).powi(2) - (dx as f64).powi(2)).sqrt() as u32;
-        img.put_pixel(posx + dx, posy + dy, pixel);
-        img.put_pixel(posx + dx, posy - dy, pixel);
-        img.put_pixel(posx - dx, posy + dy, pixel);
-        img.put_pixel(posx - dx, posy - dy, pixel);
+        img.put_pixel(position.x + dx, position.y + dy, pixel);
+        img.put_pixel(position.x + dx, position.y - dy, pixel);
+        img.put_pixel(position.x - dx, position.y + dy, pixel);
+        img.put_pixel(position.x - dx, position.y - dy, pixel);
 
         let dy: u32 = i;
         let dx: u32 = ((r as f64).powi(2) - (dy as f64).powi(2)).sqrt() as u32;
-        img.put_pixel(posx + dx, posy + dy, pixel);
-        img.put_pixel(posx + dx, posy - dy, pixel);
-        img.put_pixel(posx - dx, posy + dy, pixel);
-        img.put_pixel(posx - dx, posy - dy, pixel);
+        img.put_pixel(position.x + dx, position.y + dy, pixel);
+        img.put_pixel(position.x + dx, position.y - dy, pixel);
+        img.put_pixel(position.x - dx, position.y + dy, pixel);
+        img.put_pixel(position.x - dx, position.y - dy, pixel);
     }
 
     img
