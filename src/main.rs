@@ -4,7 +4,8 @@ extern crate num_complex;
 
 mod drawing_2d;
 mod coordinates;
-use crate::coordinates::Coordinates;
+mod raytracer;
+use crate::coordinates::*;
 
 fn main() {
     let imgx = 800;
@@ -15,19 +16,29 @@ fn main() {
     let mut imgbuf = RgbImage::new(imgx, imgy);
     // let test: Coordinates = Coordinates([10, 20])
 
-    drawing_2d::draw_grid(&mut imgbuf, Rgb([100, 100, 100]), 50);
+    // drawing_2d::draw_grid(&mut imgbuf, Rgb([100, 100, 100]), 50);
 
-    drawing_2d::draw_line(&mut imgbuf, Rgb([100, 100, 100]), Coordinates::new(200, 100), Coordinates::new(50, 0));
-    drawing_2d::draw_line(&mut imgbuf, Rgb([100, 100, 100]), Coordinates::new(50, 0), Coordinates::new(200, 100));
+    // drawing_2d::draw_line(&mut imgbuf, Rgb([100, 100, 100]), Coordinates2D::new(200, 100), Coordinates2D::new(50, 0));
+    // drawing_2d::draw_line(&mut imgbuf, Rgb([100, 100, 100]), Coordinates2D::new(50, 0), Coordinates2D::new(200, 100));
 
-    drawing_2d::draw_line(&mut imgbuf, Rgb([100, 100, 100]), Coordinates::new(300, 50), Coordinates::new(100, 250));
-    drawing_2d::draw_line(&mut imgbuf, Rgb([100, 100, 100]), Coordinates::new(100, 250), Coordinates::new(300, 50));
-
-
-    drawing_2d::draw_rectangle(&mut imgbuf, Rgb([100, 100, 100]), Coordinates::new(100, 50), Coordinates::new(200, 200));
-    drawing_2d::draw_circle(&mut imgbuf, Rgb([100, 100, 100]), 200, Coordinates::new(300, 300));
+    // drawing_2d::draw_line(&mut imgbuf, Rgb([100, 100, 100]), Coordinates2D::new(300, 50), Coordinates2D::new(100, 250));
+    // drawing_2d::draw_line(&mut imgbuf, Rgb([100, 100, 100]), Coordinates2D::new(100, 250), Coordinates2D::new(300, 50));
 
 
+    // drawing_2d::draw_rectangle(&mut imgbuf, Rgb([100, 100, 100]), Coordinates2D::new(100, 50), Coordinates2D::new(200, 200));
+    // drawing_2d::draw_circle(&mut imgbuf, Rgb([100, 100, 100]), 200, Coordinates2D::new(300, 300));
+
+    // raytracer::raytracing(&mut imgbuf);
+    // let vec1 = raytracer::calcul_line_vec(&Coordinates3D::new(1.0, 0.0, 0.0), &Coordinates3D::new(4.0, 0.0, 0.0));
+    // println!("{:?}", vec1);
+    // let vec2 = raytracer::calcul_line_vec(&Coordinates3D::new(1.0, -0.5, 2.0), &Coordinates3D::new(4.0, 3.0, 1.0));
+    // println!("{:?}", vec2);
+
+    let c1 =  Coordinates3D::new(1.0, 2.0, 3.0);
+    let c2 =  Coordinates3D::new(1.0, 2.0, 3.0);
+
+    let c3 = &c1 + &c2;
+    let c4 = &c1 + &c2;
 
     // Iterate over the coordinates and pixels of the image
     // for (x, y, pixel) in imgbuf.enumerate_pixels_mut() {
