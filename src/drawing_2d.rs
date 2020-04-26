@@ -2,11 +2,10 @@ extern crate image;
 use image::{RgbImage, Rgb, GenericImage, GenericImageView, Pixel};
 extern crate num_complex;
 
-// mod coordinates;
-use crate::coordinates::Coordinates;
+use crate::coordinates::Coordinates2D;
 
 
-pub fn draw_rectangle<T>(img: &mut T, pixel: T::Pixel, dimensions: Coordinates, position: Coordinates)
+pub fn draw_rectangle<T>(img: &mut T, pixel: T::Pixel, dimensions: Coordinates2D, position: Coordinates2D)
     where T: GenericImage + GenericImageView
 {
     for dx in 0..dimensions.x {
@@ -16,7 +15,7 @@ pub fn draw_rectangle<T>(img: &mut T, pixel: T::Pixel, dimensions: Coordinates, 
     }
 }
 
-pub fn draw_circle<T>(img: &mut T, pixel: T::Pixel, r: u32, position: Coordinates)
+pub fn draw_circle<T>(img: &mut T, pixel: T::Pixel, r: u32, position: Coordinates2D)
     where T: GenericImage + GenericImageView
 {
     // this value is the minimum range limit I found to get a continuous circle :
@@ -42,7 +41,7 @@ pub fn draw_circle<T>(img: &mut T, pixel: T::Pixel, r: u32, position: Coordinate
     }
 }
 
-pub fn draw_line<T>(img: &mut T, pixel: T::Pixel, p1: Coordinates, p2: Coordinates)
+pub fn draw_line<T>(img: &mut T, pixel: T::Pixel, p1: Coordinates2D, p2: Coordinates2D)
     where T: GenericImage + GenericImageView
 {
     let pdistx: i32 = p2.x as i32 - p1.x as i32;
