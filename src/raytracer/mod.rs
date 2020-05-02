@@ -6,7 +6,7 @@ extern crate image;
 use image::{RgbImage, Rgb, GenericImage, GenericImageView, Pixel};
 
 use crate::coordinates::Coordinates3D;
-pub use self::shapes::{sphere::Sphere, shape::Shape3D};
+pub use self::shapes::*;
 pub use self::line::*;
 pub use self::scene::*;
 
@@ -32,10 +32,15 @@ pub fn raytracing<T>(img: &mut T, scene: Scene<T::Pixel>)
         let pos_pix: Coordinates3D = Coordinates3D::new(pix_x_coord, pix_y_coord, dis_viewport);
         let ray: Line = Line::new_from_points(&cam_pos, &pos_pix);
 
+        let mut closest: f64 = std::f64::INFINITY;
+
         for shape in &scene.shapes {
-            let result = shape.line_intersections(&ray);
-            if let Some(intersections) = &result {
-                img.put_pixel(pi_x, pi_y, shape.get_color());
+            let result = shape.ray_closest_intersections(&ray);
+            if let Some(intersection) = &result {
+                if intersection.1 < closest {
+                    img.put_pixel(pi_x, pi_y, shape.get_color());
+                    closest = intersection.1;
+                }
             }
         }
     }
