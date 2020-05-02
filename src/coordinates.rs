@@ -24,7 +24,7 @@ impl Coordinates3D {
         Coordinates3D{x: x, y: y, z: z}
     }
 
-    pub fn dot(&self, other: &Coordinates3D) -> f64{
+    pub fn dot(&self, other: &Coordinates3D) -> f64 {
         self.x * other.x + self.y * other.y + self.z * other.z
     }
 
