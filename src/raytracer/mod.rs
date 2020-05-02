@@ -29,7 +29,8 @@ pub fn raytracing<T>(img: &mut T, scene: Scene<T::Pixel>)
         let pix_x_coord: f64 = 0.0 - viewport_width / 2.0 + (1.0 / dimx as f64) * (0.5 + pi_x as f64);
         let pix_y_coord: f64 = 0.0 - viewport_width / 2.0 + (1.0 / dimy as f64) * (0.5 + pi_y as f64);
         
-        let pos_pix: Coordinates3D = Coordinates3D::new(pix_x_coord, pix_y_coord, dis_viewport);
+        // we have -pix_y_coord for pixel y position because y axis is reversed on screen
+        let pos_pix: Coordinates3D = Coordinates3D::new(pix_x_coord, -pix_y_coord, dis_viewport);
         let ray: Line = Line::new_from_points(&cam_pos, &pos_pix);
 
         let mut closest: f64 = std::f64::INFINITY;
