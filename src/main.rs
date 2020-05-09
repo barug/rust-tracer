@@ -8,10 +8,6 @@ mod raytracer;
 use crate::coordinates::*;
 use crate::raytracer::*;
 
-// pub fn test<> (image: Box<dyn GenericImage>) {
-
-// }
-
 
 
 fn main() {
