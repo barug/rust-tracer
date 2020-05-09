@@ -1,25 +1,21 @@
 extern crate image;
-use image::{Pixel};
+// use serde::{Serialize, Deserialize};
 
 use super::shapes::*;
 
-
-pub struct Scene<P>
-    where P: Pixel
-{
-    pub shapes: Vec<Box<dyn Shape3D<P>>>
+// #[derive(Serialize, Deserialize)]
+pub struct Scene {
+    pub shapes: Vec<Box<dyn Shape3D>>
 }
 
-impl<P> Scene<P>
-    where P: Pixel
-{
-    pub fn new() -> Scene<P> {
+impl Scene {
+    pub fn new() -> Scene {
         Scene {
             shapes: Vec::new()
         }
     }
 
-    pub fn push_shape(&mut self, shape: Box<dyn Shape3D<P>>) {
+    pub fn push_shape(&mut self, shape: Box<dyn Shape3D>) {
         self.shapes.push(shape);
     }
 }

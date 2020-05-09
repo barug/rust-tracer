@@ -10,9 +10,7 @@ pub use self::shapes::*;
 pub use self::line::*;
 pub use self::scene::*;
 
-pub fn raytracing<T>(img: &mut T, scene: Scene<T::Pixel>)
-    where T: GenericImage + GenericImageView
-{
+pub fn raytracing(img: &mut RgbImage, scene: Scene) {
     let (dimx, dimy): (u32, u32) = img.dimensions();
     let num_pix: u32             = dimx * dimy; 
     
@@ -39,7 +37,7 @@ pub fn raytracing<T>(img: &mut T, scene: Scene<T::Pixel>)
             let result = shape.ray_closest_intersections(&ray);
             if let Some(intersection) = &result {
                 if intersection.1 < closest {
-                    img.put_pixel(pi_x, pi_y, shape.get_color());
+                    img.put_pixel(pi_x, pi_y, Rgb(shape.get_color()));
                     closest = intersection.1;
                 }
             }

@@ -1,12 +1,11 @@
 extern crate image;
-use image::Pixel;
+use image::Rgb;
 extern crate num_complex;
 
-use crate::coordinates::*;
+use crate::coordinates::Coordinates3D;
 use crate::raytracer::line::*;
 
-pub trait Shape3D<P> 
-    where P: Pixel
+pub trait Shape3D
 {
 
     // Compute all intersection with a line, if any
@@ -17,5 +16,5 @@ pub trait Shape3D<P>
     // // Compute only closest intersection to line origin, if any
     // fn closest_line_interstection (&self, line: &Line) -> Option<(Coordinates3D, f64)>;
 
-    fn get_color (&self) -> P;
+    fn get_color (&self) -> [u8; 3];
 }

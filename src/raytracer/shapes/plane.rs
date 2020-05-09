@@ -1,28 +1,22 @@
-use image::Pixel;
+use image::Rgb;
 
 use super::shape::*; 
-use crate::coordinates::*;
+use crate::coordinates::Coordinates3D;
 use crate::raytracer::line::*;
 
-pub struct Plane<P> 
-    where P: Pixel
-{
+pub struct Plane {
     origin: Coordinates3D,
     normal_vec: Coordinates3D,
-    color: P
+    color: [u8; 3]
 }
 
-impl<P> Plane<P> 
-    where P: Pixel
-{
-    pub fn new(origin: Coordinates3D, normal_vec: Coordinates3D, color: P) -> Plane<P> {
+impl Plane {
+    pub fn new(origin: Coordinates3D, normal_vec: Coordinates3D, color: [u8; 3]) -> Plane {
         Plane{ origin: origin, normal_vec: normal_vec, color: color}
     }
 }
 
-impl<P> Shape3D<P> for Plane<P>
-    where P: Pixel
-{
+impl Shape3D for Plane {
     fn ray_closest_intersections (&self, ray: &Line) -> Option<(Coordinates3D, f64)> {
         let l_dot_n: f64 = ray.unit_vec.dot(&self.normal_vec);
         if l_dot_n != 0.0 {
@@ -36,7 +30,7 @@ impl<P> Shape3D<P> for Plane<P>
         None
     }
 
-    fn get_color (&self) -> P {
+    fn get_color (&self) -> [u8; 3] {
         return self.color;
     }
 }

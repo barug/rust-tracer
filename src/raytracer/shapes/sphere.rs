@@ -1,21 +1,19 @@
-use image::Pixel;
+use image::Rgb;
+use serde::{Serialize, Deserialize};
+
 
 use super::shape::*; 
-use crate::coordinates::*;
+use crate::coordinates::Coordinates3D;
 use crate::raytracer::line::*;
 
-
-pub struct Sphere<P>
-    where P: Pixel
-{
+// #[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Sphere {
     pub centre: Coordinates3D,
     pub r: f64,
-    pub color: P
+    pub color: [u8; 3]
 }
 
-impl<P> Sphere<P> 
-    where P: Pixel
-{
+impl Sphere {
 
     // pub fn new(x :f64, y: f64, z: f64, r: f64) -> Sphere {
     //     Sphere {
@@ -24,7 +22,7 @@ impl<P> Sphere<P>
     //     }
     // }
 
-    pub fn new(centre: Coordinates3D, r: f64, color: P) -> Sphere<P> {
+    pub fn new(centre: Coordinates3D, r: f64, color: [u8; 3]) -> Sphere {
         Sphere {
             centre : centre,
             r: r,
@@ -33,9 +31,7 @@ impl<P> Sphere<P>
     }
 }
 
-impl<P> Shape3D<P> for Sphere<P>
-    where P: Pixel
-{
+impl Shape3D for Sphere {
 
     // fn line_intersections (&self, line: &Line) -> Option<Vec<(Coordinates3D, f64)>> {
     //     let or_sub_centr = &line.origin - &self.centre;
@@ -124,7 +120,7 @@ impl<P> Shape3D<P> for Sphere<P>
     //     }
     // }
 
-    fn get_color (&self) -> P {
+    fn get_color (&self) -> [u8; 3] {
         return self.color;
     }
 }
