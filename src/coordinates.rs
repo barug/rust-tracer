@@ -1,6 +1,8 @@
 use std::ops;
+use serde::{Serialize, Deserialize};
 
-#[derive(Clone, Debug)]
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Coordinates2D {
     pub x: u32,
     pub y: u32
@@ -12,7 +14,7 @@ impl Coordinates2D {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Coordinates3D {
     pub x: f64,
     pub y: f64,

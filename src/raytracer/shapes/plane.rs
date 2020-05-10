@@ -1,9 +1,10 @@
-use image::Rgb;
+use serde::{Serialize, Deserialize};
 
 use super::shape::*; 
 use crate::coordinates::Coordinates3D;
 use crate::raytracer::line::*;
 
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Plane {
     origin: Coordinates3D,
     normal_vec: Coordinates3D,
@@ -16,6 +17,7 @@ impl Plane {
     }
 }
 
+#[typetag::serde]
 impl Shape3D for Plane {
     fn ray_closest_intersections (&self, ray: &Line) -> Option<(Coordinates3D, f64)> {
         let l_dot_n: f64 = ray.unit_vec.dot(&self.normal_vec);

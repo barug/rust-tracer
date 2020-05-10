@@ -1,6 +1,7 @@
 extern crate image;
-use image::{RgbImage, Rgb, GenericImage, GenericImageView, Pixel};
+use image::{RgbImage, RgbaImage, Rgb, Rgba, GenericImage, GenericImageView, Pixel};
 extern crate num_complex;
+// use serde::{Serialize, Deserialize};
 
 mod drawing_2d;
 mod coordinates;
@@ -8,45 +9,20 @@ mod raytracer;
 use crate::coordinates::*;
 use crate::raytracer::*;
 
+use serde::{Serialize, Deserialize};
+
+use std::fs;
 
 
 fn main() {
     let imgx = 800;
     let imgy = 800;
-
     let mut imgbuf = RgbImage::new(imgx, imgy);
-    // imgbuf.put_pixel(x: u32, y: u32, pixel: P)
 
-    let s = Box::new(
-        Sphere::new(
-            Coordinates3D::new(0.0, 0.0, 8.0),
-            2.0,
-            [200, 200, 200]
-        )
-    );
+    let conf =  fs::read_to_string("scene.yml")
+    .expect("Something went wrong reading the configuration file");
 
-    
-    let s2 = Box::new(
-        Sphere::new(
-            Coordinates3D::new(3.0, 0.0, 7.0),
-            2.0,
-            [200, 100, 200]
-        )
-    );
-
-    let s3 = Box::new(
-        Plane::new(
-            Coordinates3D::new(0.0, -1.0, 0.0),
-            Coordinates3D::new(0.0, 1.0, 0.0),
-            [200, 200, 100]
-        )
-    );
-
-    
-    let mut scene: Scene = Scene::new();
-    scene.push_shape(s);
-    scene.push_shape(s2);
-    scene.push_shape(s3);
+    let scene: Scene = serde_yaml::from_str(&conf).unwrap();
 
     raytracer::raytracing(&mut imgbuf, scene);
 

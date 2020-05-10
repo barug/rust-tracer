@@ -1,9 +1,9 @@
 extern crate image;
-// use serde::{Serialize, Deserialize};
+use serde::{Serialize, Deserialize, Serializer};
 
 use super::shapes::*;
 
-// #[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize)]
 pub struct Scene {
     pub shapes: Vec<Box<dyn Shape3D>>
 }

@@ -1,12 +1,11 @@
 use image::Rgb;
 use serde::{Serialize, Deserialize};
 
-
 use super::shape::*; 
 use crate::coordinates::Coordinates3D;
 use crate::raytracer::line::*;
 
-// #[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Sphere {
     pub centre: Coordinates3D,
     pub r: f64,
@@ -31,6 +30,7 @@ impl Sphere {
     }
 }
 
+#[typetag::serde]
 impl Shape3D for Sphere {
 
     fn ray_closest_intersections (&self, ray: &Line) -> Option<(Coordinates3D, f64)> {

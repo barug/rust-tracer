@@ -1,5 +1,8 @@
+use serde::{Serialize, Deserialize};
+
 use crate::coordinates::*;
 
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Line {
     pub origin: Coordinates3D,
     pub unit_vec: Coordinates3D
