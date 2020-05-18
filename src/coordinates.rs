@@ -30,6 +30,14 @@ impl Coordinates3D {
         self.x * other.x + self.y * other.y + self.z * other.z
     }
 
+    pub fn cross(&self, other: &Coordinates3D) -> Coordinates3D {
+        Coordinates3D::new(
+            self.y * other.z - self.z * other.y,
+            self.z * other.x - self.x * other.z,
+            self.x * other.y - self.y * other.x
+        )
+    }
+
     pub fn dist(&self, other: &Coordinates3D) -> f64 {
         ((self.x - other.x).powi(2) + (self.y - other.y).powi(2) + (self.z - other.z).powi(2)).sqrt()
     }
@@ -182,6 +190,43 @@ impl ops::Mul<Coordinates3D> for f64 {
             self * _rhs.x,
             self * _rhs.y,
             self * _rhs.z
+        )
+    }
+}
+
+impl ops::Div<f64> for Coordinates3D {
+    type Output = Coordinates3D;
+    
+    fn div(self, _rhs: f64) -> Coordinates3D {
+        Coordinates3D::new(
+            self.x / _rhs,
+            self.y / _rhs,
+            self.z / _rhs
+        )
+    }
+}
+
+impl ops::Div<f64> for &Coordinates3D {
+    type Output = Coordinates3D;
+    
+    fn div(self, _rhs: f64) -> Coordinates3D {
+        Coordinates3D::new(
+            self.x / _rhs,
+            self.y / _rhs,
+            self.z / _rhs
+        )
+    }
+}
+
+
+impl ops::Div<Coordinates3D> for f64 {
+    type Output = Coordinates3D;
+    
+    fn div(self, _rhs: Coordinates3D) -> Coordinates3D {
+        Coordinates3D::new(
+             _rhs.x / self,
+             _rhs.y / self,
+             _rhs.z / self
         )
     }
 }

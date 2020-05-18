@@ -14,22 +14,42 @@ pub fn raytracing(img: &mut RgbImage, scene: Scene) {
     let (dimx, dimy): (u32, u32) = img.dimensions();
     let num_pix: u32             = dimx * dimy; 
     
-    let cam_orient: Coordinates3D = Coordinates3D::new(0.0, 0.0, 1.0); 
-    let cam_pos: Coordinates3D    = Coordinates3D::new(0.0 ,0.0 ,0.0);
+    let cam_orient: Coordinates3D = Coordinates3D::new(0.0, 0.0, 1.0);
+    let cam_pos: Coordinates3D    = Coordinates3D::new(0.0 ,0.0 ,-7.0);
     let up_vec: Coordinates3D     = Coordinates3D::new(0.0 ,1.0 ,0.0);
     
     let dis_viewport: f64        = 1.0;
     let viewport_width: f64      = 1.0;
 
+    let fov = std::f64::consts::PI / 4.0;
+
+    let t = cam_orient;
+    let w = up_vec;
+    let b = w.cross(&t);
+    let v = t.cross(&b);
+    println!("b: {:?}", b);
+    println!("v: {:?}", v);
+
+    let g_x: f64 = (fov / 2.0).tan();
+    let g_y: f64 = g_x * (dimy as f64 / dimx as f64);
+
+    println!("g_x: {:?}, g_y: {:?}", g_x, g_y);
+
+    let P_1_1 = &cam_pos + t - g_x * &b + g_y * &v;
+    println!("P_1_1: {:?}", &P_1_1);
+    
+    let q_x = ((2.0 * g_x) / (dimx as f64 - 1.0)) * &b;
+    let q_y = ((2.0 * g_y) / (dimy as f64 - 1.0)) * &v;
+
+    println!("q_x: {:?}, q_y: {:?}", &q_x, &q_y);
+
     for i in 0..num_pix {
         let pi_x: u32 = i % dimx;
         let pi_y: u32 = i / dimx;
-        let pix_x_coord: f64 = 0.0 - viewport_width / 2.0 + (1.0 / dimx as f64) * (0.5 + pi_x as f64);
-        let pix_y_coord: f64 = 0.0 - viewport_width / 2.0 + (1.0 / dimy as f64) * (0.5 + pi_y as f64);
         
-        // we have -pix_y_coord for pixel y position because y axis is reversed on screen
-        let pos_pix: Coordinates3D = Coordinates3D::new(pix_x_coord, -pix_y_coord, dis_viewport);
-        let ray: Line = Line::new_from_points(&cam_pos, &pos_pix);
+        let pos_pix = &P_1_1 + &q_x * pi_x as f64 - &q_y * pi_y as f64;
+        let mut ray: Line = Line::new_from_points(&cam_pos, &pos_pix);
+        ray.unit_vec = &ray.unit_vec / ray.unit_vec.norm();
 
         let mut closest: f64 = std::f64::INFINITY;
 
