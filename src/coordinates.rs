@@ -224,9 +224,34 @@ impl ops::Div<Coordinates3D> for f64 {
     
     fn div(self, _rhs: Coordinates3D) -> Coordinates3D {
         Coordinates3D::new(
-             _rhs.x / self,
-             _rhs.y / self,
-             _rhs.z / self
+            self /_rhs.x,
+            self /_rhs.y,
+            self /_rhs.z
         )
     }
 }
+
+impl ops::Div<&Coordinates3D> for f64 {
+    type Output = Coordinates3D;
+    
+    fn div(self, _rhs: &Coordinates3D) -> Coordinates3D {
+        Coordinates3D::new(
+            self /_rhs.x,
+            self /_rhs.y,
+            self /_rhs.z
+        )
+    }
+}
+
+
+// impl ops::Div<Coordinates3D> for f64 {
+//     type Output = Coordinates3D;
+    
+//     fn div(self, _rhs: Coordinates3D) -> Coordinates3D {
+//         Coordinates3D::new(
+//              _rhs.x / self,
+//              _rhs.y / self,
+//              _rhs.z / self
+//         )
+//     }
+// }

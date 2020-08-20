@@ -18,7 +18,19 @@ fn main() {
     let conf = fs::read_to_string("scene.yml")
         .expect("Something went wrong reading the configuration file");
 
-    let scene: Scene = serde_yaml::from_str(&conf).unwrap();
+    let mut scene: Scene = serde_yaml::from_str(&conf).unwrap();
+    scene.push_shape(std::boxed::Box::new(
+        shapes::Cuboid::new(
+            coordinates::Coordinates3D::new(0.0, 0.0, 0.0),
+            [
+                coordinates::Coordinates3D::new(-1.0, -1.0, -1.0),
+                coordinates::Coordinates3D::new(1.0, 1.0, 1.0)
+            ],
+            [100, 0, 100]
+        )
+    )
+    );
+    
 
     scene.raytracing(&mut imgbuf);
 
