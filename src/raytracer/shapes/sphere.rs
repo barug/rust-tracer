@@ -3,7 +3,7 @@ use serde::{Serialize, Deserialize};
 
 use super::shape::*; 
 use crate::coordinates::Coordinates3D;
-use crate::raytracer::line::*;
+use crate::raytracer::ray::*;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Sphere {
@@ -33,7 +33,7 @@ impl Sphere {
 #[typetag::serde]
 impl Shape3D for Sphere {
 
-    fn ray_closest_intersections (&self, ray: &Line) -> Option<(Coordinates3D, f64)> {
+    fn ray_closest_intersections (&self, ray: &Ray) -> Option<(Coordinates3D, f64)> {
         let or_sub_centr = &ray.origin - &self.centre;
         let discriminant: f64 = ray.unit_vec.dot(&or_sub_centr).powi(2) - (or_sub_centr.norm().powi(2) - self.r.powi(2));
 

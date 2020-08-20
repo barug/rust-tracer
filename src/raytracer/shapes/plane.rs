@@ -2,7 +2,7 @@ use serde::{Serialize, Deserialize};
 
 use super::shape::*; 
 use crate::coordinates::Coordinates3D;
-use crate::raytracer::line::*;
+use crate::raytracer::ray::*;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Plane {
@@ -19,7 +19,7 @@ impl Plane {
 
 #[typetag::serde]
 impl Shape3D for Plane {
-    fn ray_closest_intersections (&self, ray: &Line) -> Option<(Coordinates3D, f64)> {
+    fn ray_closest_intersections (&self, ray: &Ray) -> Option<(Coordinates3D, f64)> {
         let l_dot_n: f64 = ray.unit_vec.dot(&self.normal_vec);
         if l_dot_n != 0.0 {
             let dist = (&self.origin - &ray.origin).dot(&self.normal_vec) / l_dot_n;
