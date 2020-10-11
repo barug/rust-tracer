@@ -1,25 +1,26 @@
 use serde::{Serialize, Deserialize};
+use na::Vector3;
 
-use crate::coordinates::*;
+// use crate::coordinates::*;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Ray {
-    pub origin: Coordinates3D,
-    pub unit_vec: Coordinates3D,
-    pub inverse: Coordinates3D,
+    pub origin: Vector3<f64>,
+    pub unit_vec: Vector3<f64>,
+    pub inverse: Vector3<f64>,
     pub sign: [usize; 3]
 }
 
 impl Ray {
     // Calculate unit vector of line form origin and other point
-    pub fn new_from_points(origin: &Coordinates3D, other: &Coordinates3D) -> Ray {
-        let d: f64 = origin.dist(other);
-        let unit = Coordinates3D::new(
-            (other.x - origin.x) / d,
-            (other.y - origin.y) / d,
-            (other.z - origin.z) / d,
-        );
-        let inverse = 1.0 / &unit;
+    pub fn new_from_points(origin: &Vector3<f64>, other: &Vector3<f64>) -> Ray {
+        let d: f64 = (origin - other).norm();
+        let unit: Vector3<f64>  = (other - origin) / d;
+        let inverse: Vector3<f64> = Vector3::new(
+            1.0 / unit.x,
+            1.0 / unit.y,
+            1.0 / unit.z,
+        );        
         let sign = [
             (inverse.x < 0.0) as usize,
             (inverse.y < 0.0) as usize,

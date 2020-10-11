@@ -1,11 +1,14 @@
 extern crate image;
 use image::{RgbImage, RgbaImage, Rgb, Rgba, GenericImage, GenericImageView, Pixel};
 extern crate num_complex;
+extern crate nalgebra as na;
+use na::Vector3;
 
 mod drawing_2d;
 mod coordinates;
 mod raytracer;
 use crate::raytracer::*;
+use crate::raytracer::camera::*;
 
 use std::fs;
 use std::fs::File;
@@ -26,11 +29,8 @@ fn main() -> std::io::Result<()> {
     let mut imgbuf = RgbImage::new(imgx, imgy);
 
     let conf = fs::read_to_string("scene.yml")?;
-
-
-    let scene: Scene = serde_yaml::from_str(&conf).unwrap();;
+    let scene: Scene = serde_yaml::from_str(&conf).unwrap();
     
-
     scene.raytracing(&mut imgbuf);
 
     // Save the image as test.png”, the format is deduced from the path
