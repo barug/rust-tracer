@@ -1,0 +1,73 @@
+camera:
+  cam_orient:
+    x: 0.0
+    y: 0.0
+    z: 1.0
+  cam_pos:
+    x: 1.0
+    y: 2.0
+    z: -7.0
+  up_vec:
+    x: 0.0
+    y: 1.0
+    z: 0.0
+shapes:
+  - type: Sphere
+    centre:
+      x: 0.0
+      y: 0.0
+      z: 8.0
+    r: 2.0
+    color:
+      - 200
+      - 200
+      - 200
+  - type: Sphere
+    centre:
+      x: 3.0
+      y: 0.0
+      z: 7.0
+    r: 2.0
+    color:
+      - 200
+      - 100
+      - 200
+  - type: Plane
+    origin:
+      x: 0.0
+      y: -1.0
+      z: 0.0
+    normal_vec:
+      x: 0.0
+      y: 1.0
+      z: 0.0
+    color:
+      - 200
+      - 200
+      - 100 
+  # - type: Sphere
+  #   centre:
+  #     x: 0.0
+  #     y: 0.0
+  #     z: 0.0
+  #   r: 1.1
+  #   color:
+  #     - 200
+  #     - 100
+  #     - 150
+  - type: Cuboid
+    position:
+      x: 0.0
+      y: 0.0
+      z: 0.0
+    bounds:
+      - x: -1.0
+        y: -1.0
+        z: -1.0
+      - x: 1.0
+        y: 1.0
+        z: 1.0
+    color:
+      - 100
+      - 0
+      - 100

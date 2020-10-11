@@ -4,7 +4,7 @@ use serde::{Serialize, Deserialize, Serializer};
 
 use super::shapes::*;
 use super::camera::*;
-use super::line::*;
+use super::ray::*;
 
 #[derive(Serialize, Deserialize)]
 pub struct Scene {
@@ -39,7 +39,7 @@ impl Scene {
             let pi_y: u32 = i / dimx;
             
             let pos_pix = &P_1_1 + &q_x * pi_x as f64 - &q_y * pi_y as f64;
-            let mut ray: Line = Line::new_from_points(&self.camera.cam_pos, &pos_pix);
+            let mut ray: Ray = Ray::new_from_points(&self.camera.cam_pos, &pos_pix);
             ray.unit_vec = &ray.unit_vec / ray.unit_vec.norm();
 
             let mut closest: f64 = std::f64::INFINITY;
