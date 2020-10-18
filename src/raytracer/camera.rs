@@ -1,10 +1,10 @@
 use serde::{Serialize, Deserialize};
-
-use crate::coordinates::*;
+use na::Vector3;
+// use crate::coordinates::*;
 
 #[derive(Serialize, Deserialize)]
 pub struct Camera {
-    pub cam_orient: Coordinates3D,
-    pub cam_pos: Coordinates3D,
-    pub up_vec: Coordinates3D,
+    pub cam_orient: Vector3<f64>,
+    pub cam_pos: Vector3<f64>,
+    pub up_vec: Vector3<f64>,
 }

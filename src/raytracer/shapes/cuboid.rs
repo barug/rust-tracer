@@ -1,23 +1,24 @@
 use image::Rgb;
 use serde::{Serialize, Deserialize};
+use na::Vector3;
 
 use std::cmp::max;
 use std::cmp::min;
 
 
 use super::shape::*; 
-use crate::coordinates::Coordinates3D;
+// use crate::coordinates::Coordinates3D;
 use crate::raytracer::ray::*;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Cuboid {
-    pub position: Coordinates3D,
-    pub bounds: [Coordinates3D; 2], 
+    pub position: Vector3<f64>,
+    pub bounds: [Vector3<f64>; 2], 
     pub color: [u8; 3]
 }
 
 impl Cuboid {
-    pub fn new(position: Coordinates3D, bounds: [Coordinates3D; 2], color: [u8; 3]) -> Cuboid {
+    pub fn new(position: Vector3<f64>, bounds: [Vector3<f64>; 2], color: [u8; 3]) -> Cuboid {
         Cuboid {
             position: position,
             bounds : bounds,
@@ -32,9 +33,9 @@ impl Shape3D for Cuboid {
     // Bouding box AABB algorithm such as seen at :
     // https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-box-intersection
     // saved in doc folder in case of dead link
-    fn ray_closest_intersections (&self, ray: &Ray) -> Option<(Coordinates3D, f64)> {
+    fn ray_closest_intersections (&self, ray: &Ray) -> Option<(Vector3<f64>, f64)> {
 
-        let translated_origin: Coordinates3D = &ray.origin - &self.position;
+        let translated_origin: Vector3<f64> = &ray.origin - &self.position;
 
         let txmin: f64 = (self.bounds[ray.sign[0]].x - translated_origin.x) * ray.inverse.x;
         let txmax: f64 = (self.bounds[1-ray.sign[0]].x - translated_origin.x) * ray.inverse.x; 
