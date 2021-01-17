@@ -1,15 +1,20 @@
 extern crate image;
 use image::{RgbImage, Rgb, GenericImage, GenericImageView, Pixel};
+use intersection::Intersection;
 use serde::{Serialize, Deserialize, Serializer};
 
-use super::{intersection, shapes::*};
+use super::{DistantLight, intersection, shapes::*};
 use super::camera::*;
 use super::ray::*;
+
+
+use na::Vector3;
 
 #[derive(Serialize, Deserialize)]
 pub struct Scene {
     pub camera: Camera,
-    pub shapes: Vec<Box<dyn Shape3D>>
+    pub shapes: Vec<Box<dyn Shape3D>>,
+    pub lights: Vec<DistantLight>
 }
 
 impl Scene {
@@ -33,7 +38,6 @@ impl Scene {
         let q_x = ((2.0 * g_x) / (dimx as f64 - 1.0)) * &b;
         let q_y = ((2.0 * g_y) / (dimy as f64 - 1.0)) * &v;
 
-        
         for i in 0..num_pix {
             let pi_x: u32 = i % dimx;
             let pi_y: u32 = i / dimx;
@@ -52,9 +56,32 @@ impl Scene {
                     }
                 );
             if let Some(intersection) = &result {
-                img.put_pixel(pi_x, pi_y, Rgb(intersection.color));
+                if let Some(shaded_color) = self.apply_shading(intersection) {
+                    img.put_pixel(pi_x, pi_y, Rgb(shaded_color));
+                }
             }                
         }
+    }
+
+    fn apply_shading(&self, intersection: &Intersection) -> Option<[u8; 3]> {
+        let shading_coefficient: f64 = &self.lights.iter()
+            .map( |light| {
+                let angle = light.direction.angle(&intersection.normal);
+                if angle < (std::f64::consts::PI / 2.0) {
+                    1.0 - (angle / (std::f64::consts::PI / 2.0))
+                } else {
+                    0.0
+                }
+            }).sum::<f64>() / self.lights.len() as f64;
+        if shading_coefficient > 0.0 {
+            let shaded_color: [u8; 3] = [
+                (intersection.color[0] as f64 * shading_coefficient) as u8, 
+                (intersection.color[1] as f64 * shading_coefficient) as u8,
+                (intersection.color[2] as f64 * shading_coefficient) as u8
+            ];
+            return Some(shaded_color);
+        }
+        None
     }
 
     pub fn push_shape(&mut self, shape: Box<dyn Shape3D>) {

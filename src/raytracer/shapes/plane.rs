@@ -28,11 +28,14 @@ impl Shape3D for Plane {
                 return None
             }
             let location = &ray.origin + &ray.unit_vec * distance;
-            let normal: Vector3<f64> = if ray.unit_vec.angle(&self.normal_vec) < std::f64::consts::PI / 2.0 {
+            let normal: Vector3<f64> = if ray.unit_vec.angle(&self.normal_vec) > std::f64::consts::PI / 2.0 {
                 self.normal_vec.clone_owned()
             } else {
                 - self.normal_vec.clone_owned()
             };
+            // println!("{:?}", &ray.unit_vec);
+            // println!("{:?}", ray.unit_vec.angle(&self.normal_vec));
+            // println!("{:?}", normal);
             return Some(Intersection::new(location, distance, normal, self.get_color()))
         }
         None
