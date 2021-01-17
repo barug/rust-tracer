@@ -39,9 +39,8 @@ impl Scene {
             let pi_y: u32 = i / dimx;
             
             let pos_pix = &P_1_1 + &q_x * pi_x as f64 - &q_y * pi_y as f64;
-            let mut ray: Ray = Ray::new_from_points(&self.camera.cam_pos, &pos_pix);
-            ray.unit_vec = &ray.unit_vec / ray.unit_vec.norm();
-
+            let ray: Ray = Ray::new_from_points(&self.camera.cam_pos, &pos_pix);
+    
             let result = self.shapes
                 .iter()
                 .flat_map(|shape| shape.ray_closest_intersections(&ray))

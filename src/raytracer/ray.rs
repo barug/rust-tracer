@@ -15,7 +15,7 @@ impl Ray {
     // Calculate unit vector of line form origin and other point
     pub fn new_from_points(origin: &Vector3<f64>, other: &Vector3<f64>) -> Ray {
         let d: f64 = (origin - other).norm();
-        let unit: Vector3<f64>  = (other - origin) / d;
+        let unit: Vector3<f64> = ((other - origin) / d).normalize();
         let inverse: Vector3<f64> = Vector3::new(
             1.0 / unit.x,
             1.0 / unit.y,
