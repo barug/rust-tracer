@@ -2,7 +2,7 @@ extern crate image;
 use image::{RgbImage, Rgb, GenericImage, GenericImageView, Pixel};
 use serde::{Serialize, Deserialize, Serializer};
 
-use super::shapes::*;
+use super::{intersection, shapes::*};
 use super::camera::*;
 use super::ray::*;
 
@@ -42,17 +42,19 @@ impl Scene {
             let mut ray: Ray = Ray::new_from_points(&self.camera.cam_pos, &pos_pix);
             ray.unit_vec = &ray.unit_vec / ray.unit_vec.norm();
 
-            let mut closest: f64 = std::f64::INFINITY;
-
-            for shape in &self.shapes {
-                let result = shape.ray_closest_intersections(&ray);
-                if let Some(intersection) = &result {
-                    if intersection.1 < closest {
-                        img.put_pixel(pi_x, pi_y, Rgb(shape.get_color()));
-                        closest = intersection.1;
+            let result = self.shapes
+                .iter()
+                .flat_map(|shape| shape.ray_closest_intersections(&ray))
+                .min_by(
+                    |intersection_1, intersection_2| {
+                        intersection_1.distance
+                            .partial_cmp(&intersection_2.distance)
+                            .unwrap()
                     }
-                }
-            }
+                );
+            if let Some(intersection) = &result {
+                img.put_pixel(pi_x, pi_y, Rgb(intersection.color));
+            }                
         }
     }
 

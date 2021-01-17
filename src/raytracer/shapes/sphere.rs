@@ -3,6 +3,8 @@ use serde::{Serialize, Deserialize};
 
 use super::shape::*; 
 use crate::raytracer::ray::*;
+use crate::raytracer::Intersection;
+
 use na::Vector3;
 
 
@@ -34,7 +36,7 @@ impl Sphere {
 #[typetag::serde]
 impl Shape3D for Sphere {
 
-    fn ray_closest_intersections (&self, ray: &Ray) -> Option<(Vector3<f64>, f64)> {
+    fn ray_closest_intersections (&self, ray: &Ray) -> Option<Intersection> {
         let or_sub_centr = &ray.origin - &self.centre;
         let discriminant: f64 = ray.unit_vec.dot(&or_sub_centr).powi(2) - (or_sub_centr.norm().powi(2) - self.r.powi(2));
 
@@ -51,11 +53,13 @@ impl Shape3D for Sphere {
             let dist2: f64 = - ray.unit_vec.dot(&or_sub_centr) - discriminant.sqrt();
 
             if dist1 >= 0.0 && (dist2 < 0.0 || dist2 > dist1) {
-                let intersect1: Vector3<f64> = &ray.origin + &ray.unit_vec * dist1;
-                return Some((intersect1, dist1))
+                let location: Vector3<f64> = &ray.origin + &ray.unit_vec * dist1;
+                let normal: Vector3<f64> = &location - &self.centre; 
+                return Some(Intersection::new(location, dist1, normal, self.get_color()))
             } else if dist2 >= 0.0 {
-                let intersect2: Vector3<f64> = &ray.origin + &ray.unit_vec * dist2;
-                return Some((intersect2, dist2))
+                let location: Vector3<f64> = &ray.origin + &ray.unit_vec * dist2;
+                let normal: Vector3<f64> = &location - &self.centre;
+                return Some(Intersection::new(location, dist2, normal, self.get_color()))
             }
         }
         return None;
