@@ -1,14 +1,10 @@
-use image::Rgb;
 use serde::{Serialize, Deserialize};
 use na::Vector3;
 
-use std::cmp::max;
-use std::cmp::min;
-
-
 use super::shape::*; 
-// use crate::coordinates::Coordinates3D;
 use crate::raytracer::ray::*;
+use crate::raytracer::Intersection;
+
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Cuboid {
@@ -33,7 +29,7 @@ impl Shape3D for Cuboid {
     // Bouding box AABB algorithm such as seen at :
     // https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-box-intersection
     // saved in doc folder in case of dead link
-    fn ray_closest_intersections (&self, ray: &Ray) -> Option<(Vector3<f64>, f64)> {
+    fn ray_closest_intersections (&self, ray: &Ray) -> Option<Intersection> {
 
         let translated_origin: Vector3<f64> = &ray.origin - &self.position;
 
@@ -60,16 +56,21 @@ impl Shape3D for Cuboid {
         let txyzmax: f64 = txymax.min(tzmax);
 
  
-        let dist = txyzmin;
+        let distance = txyzmin;
         if txyzmin > txyzmax {
             return None
         }
-        if dist < 0.0 {
+        if distance < 0.0 {
             return None
         }
 
-        let intersection = &ray.origin + &ray.unit_vec * dist;
-        return Some((intersection, dist));
+        let location = &ray.origin + &ray.unit_vec * distance;
+
+        // the normal is on the axis with the highest absolute value
+        let mut normal: Vector3<f64> = Vector3::<f64>::zeros();
+        normal[location.iamax()] = 1.0;
+
+        return Some(Intersection::new(location, distance, normal, self.get_color()))
     }
 
     fn get_color (&self) -> [u8; 3] {
