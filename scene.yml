@@ -6,7 +6,7 @@ camera:
     - 1.0
   cam_pos:
     - 2.0
-    - 2.0
+    - 3.0
     - -7.0
   up_vec:
     - 0.0
@@ -23,19 +23,21 @@ shapes:
       - 1.0
       - 0.0
     color:
-      - 200
-      - 200
-      - 100
+      - 30000
+      - 30000
+      - 15000
+    albedo: 0.18
   - type: Sphere
     centre:
       - 0.0
       - 0.0
       - 8.0
-    r: 2.0
+    r: 2.5
     color:
-      - 200
-      - 200
-      - 200
+      - 30000
+      - 30000
+      - 30000
+    albedo: 0.18
   - type: Sphere
     centre:
       - 3.0
@@ -43,9 +45,10 @@ shapes:
       - 7.0
     r: 2.0
     color:
-      - 200
-      - 100
-      - 200
+      - 30000
+      - 15000
+      - 30000
+    albedo: 0.18
   - type: Cuboid
     position:
       - 0.0
@@ -59,11 +62,18 @@ shapes:
         - 1.0
         - 1.0
     color:
-      - 100
+      - 30000
       - 0
-      - 100
+      - 30000
+    albedo: 0.18
 lights:
   - direction:
     - 1.0
     - 1.5
     - 0.0
+    intensity: 10.0
+  - direction:
+    - -0.5
+    - 1.5
+    - 0.0
+    intensity: 20.0

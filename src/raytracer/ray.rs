@@ -14,8 +14,22 @@ pub struct Ray {
 impl Ray {
     // Calculate unit vector of line form origin and other point
     pub fn new_from_points(origin: &Vector3<f64>, other: &Vector3<f64>) -> Ray {
-        let d: f64 = (origin - other).norm();
-        let unit: Vector3<f64> = ((other - origin) / d).normalize();
+        let unit: Vector3<f64> = (other - origin).normalize();
+        let inverse: Vector3<f64> = Vector3::new(
+            1.0 / unit.x,
+            1.0 / unit.y,
+            1.0 / unit.z,
+        );        
+        let sign = [
+            (inverse.x < 0.0) as usize,
+            (inverse.y < 0.0) as usize,
+            (inverse.z < 0.0) as usize,
+        ];
+        Ray {origin : (*origin).clone(), unit_vec: unit, inverse: inverse, sign: sign}
+    }
+
+    pub fn new_from_origine_and_direction(origin: &Vector3<f64>, direction: &Vector3<f64>) -> Ray {
+        let unit: Vector3<f64> = direction.normalize();
         let inverse: Vector3<f64> = Vector3::new(
             1.0 / unit.x,
             1.0 / unit.y,
