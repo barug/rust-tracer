@@ -12,7 +12,8 @@ use na::Vector3;
 pub struct Sphere {
     pub centre: Vector3<f64>,
     pub r: f64,
-    pub color: [u8; 3]
+    pub color: Vector3<u16>,
+    pub albedo: f64
 }
 
 impl Sphere {
@@ -24,11 +25,12 @@ impl Sphere {
     //     }
     // }
 
-    pub fn new(centre: Vector3<f64>, r: f64, color: [u8; 3]) -> Sphere {
+    pub fn new(centre: Vector3<f64>, r: f64, color: Vector3<u16>, albedo: f64) -> Sphere {
         Sphere {
             centre : centre,
             r: r,
-            color: color
+            color: color,
+            albedo: albedo
         }
     }
 }
@@ -55,17 +57,21 @@ impl Shape3D for Sphere {
             if dist1 >= 0.0 && (dist2 < 0.0 || dist2 > dist1) {
                 let location: Vector3<f64> = &ray.origin + &ray.unit_vec * dist1;
                 let normal: Vector3<f64> = &location - &self.centre; 
-                return Some(Intersection::new(location, dist1, normal, self.get_color()))
+                return Some(Intersection::new(location, dist1, normal, self))
             } else if dist2 >= 0.0 {
                 let location: Vector3<f64> = &ray.origin + &ray.unit_vec * dist2;
                 let normal: Vector3<f64> = &location - &self.centre;
-                return Some(Intersection::new(location, dist2, normal, self.get_color()))
+                return Some(Intersection::new(location, dist2, normal, self))
             }
         }
         return None;
     }
 
-    fn get_color (&self) -> [u8; 3] {
+    fn get_color (&self) -> Vector3<u16> {
         return self.color;
+    }
+
+    fn get_albedo (&self) -> f64 {
+        return self.albedo;
     }
 }

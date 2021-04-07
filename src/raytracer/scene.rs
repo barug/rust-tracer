@@ -1,5 +1,5 @@
 extern crate image;
-use image::{RgbImage, Rgb, GenericImage, GenericImageView, Pixel};
+use image::{RgbImage, Rgb, GenericImage, GenericImageView, Pixel, ImageBuffer};
 use intersection::Intersection;
 use serde::{Serialize, Deserialize, Serializer};
 
@@ -18,7 +18,7 @@ pub struct Scene {
 }
 
 impl Scene {
-    pub fn raytracing(& self, img: &mut RgbImage) {
+    pub fn render_scene(& self, img: &mut ImageBuffer::<Rgb<u16>, Vec<u16>>) {
         let (dimx, dimy): (u32, u32) = img.dimensions();
         let num_pix: u32             = dimx * dimy; 
         
@@ -44,41 +44,79 @@ impl Scene {
             
             let pos_pix = &P_1_1 + &q_x * pi_x as f64 - &q_y * pi_y as f64;
             let ray: Ray = Ray::new_from_points(&self.camera.cam_pos, &pos_pix);
-    
-            let result = self.shapes
-                .iter()
-                .flat_map(|shape| shape.ray_closest_intersections(&ray))
-                .min_by(
-                    |intersection_1, intersection_2| {
-                        intersection_1.distance
-                            .partial_cmp(&intersection_2.distance)
-                            .unwrap()
-                    }
-                );
-            if let Some(intersection) = &result {
-                if let Some(shaded_color) = self.apply_shading(intersection) {
-                    img.put_pixel(pi_x, pi_y, Rgb(shaded_color));
-                }
-            }                
+                
+            let result = self.trace_ray(ray, 4);
+            if let Some(shaded_color) = result {
+                img.put_pixel(pi_x, pi_y, Rgb::<u16>(shaded_color.into()));
+            }
         }
     }
 
-    fn apply_shading(&self, intersection: &Intersection) -> Option<[u8; 3]> {
-        let shading_coefficient: f64 = &self.lights.iter()
+
+    fn trace_ray(&self, ray: Ray, depth: u8) -> Option<Vector3<u16>> {
+        let result = self.shapes
+        .iter()
+        .flat_map(|shape| shape.ray_closest_intersections(&ray))
+        .min_by(
+            |intersection_1, intersection_2| {
+                intersection_1.distance
+                    .partial_cmp(&intersection_2.distance)
+                    .unwrap()
+            }
+        );
+
+        if let Some(intersection) = &result {
+            let diffuse_shading: Vector3<u16> = self.diffuse_shading(intersection).unwrap_or(Vector3::<u16>::from_element(0_u16));
+
+            let reflection_shading: Vector3<u16> = if depth > 0 {
+                let reflection_vector = ray.unit_vec - 2.0 * intersection.normal.dot(&ray.unit_vec) * intersection.normal;
+                let reflection_origine = &intersection.location + 0.01 * &intersection.normal;
+                let reflection_ray = Ray::new_from_origine_and_direction(&reflection_origine, &reflection_vector);
+
+                self.trace_ray(reflection_ray, depth - 1).unwrap_or(Vector3::<u16>::from_element(0_u16))
+            } else {
+                Vector3::<u16>::from_element(0_u16)
+            };
+
+            return Some(diffuse_shading + reflection_shading / 6)
+        }
+        
+        None
+    }
+
+
+    fn diffuse_shading(&self, intersection: &Intersection) -> Option<Vector3<u16>> {
+
+        let albedo =  intersection.shape.get_albedo();
+        let shading_coefficient: f64 = self.lights.iter()
             .map( |light| {
+
+                let origine = &intersection.location + 0.01 * &intersection.normal;
+                let reverse_lightray = Ray::new_from_origine_and_direction(&origine, &light.direction);
+
+                let is_obstructed = self.shapes.iter()
+                    .any(
+                        |shape| shape.ray_closest_intersections(&reverse_lightray).is_some()
+                    );
+                if is_obstructed {
+                    return 0.0
+                }
+
                 let angle = light.direction.angle(&intersection.normal);
                 if angle < (std::f64::consts::PI / 2.0) {
-                    1.0 - (angle / (std::f64::consts::PI / 2.0))
+                    // 1.0 - (angle / (std::f64::consts::PI / 2.0))
+                    albedo / std::f64::consts::PI * light.intensity * angle.cos()
                 } else {
                     0.0
                 }
-            }).sum::<f64>() / self.lights.len() as f64;
+            }).sum::<f64>();
         if shading_coefficient > 0.0 {
-            let shaded_color: [u8; 3] = [
-                (intersection.color[0] as f64 * shading_coefficient) as u8, 
-                (intersection.color[1] as f64 * shading_coefficient) as u8,
-                (intersection.color[2] as f64 * shading_coefficient) as u8
-            ];
+            let color = intersection.shape.get_color(); 
+            let shaded_color: Vector3<u16> = [
+                (color[0] as f64 * shading_coefficient).min(65535.0) as u16, 
+                (color[1] as f64 * shading_coefficient).min(65535.0) as u16,
+                (color[2] as f64 * shading_coefficient).min(65535.0) as u16
+            ].into();
             return Some(shaded_color);
         }
         None

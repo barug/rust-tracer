@@ -9,12 +9,13 @@ use crate::raytracer::Intersection;
 pub struct Plane {
     pub origin: Vector3<f64>,
     pub normal_vec: Vector3<f64>,
-    pub color: [u8; 3]
+    pub color: Vector3<u16>,
+    albedo: f64
 }
 
 impl Plane {
-    pub fn new(origin: Vector3<f64>, normal_vec: Vector3<f64>, color: [u8; 3]) -> Plane {
-        Plane{ origin: origin, normal_vec: normal_vec, color: color}
+    pub fn new(origin: Vector3<f64>, normal_vec: Vector3<f64>, color: Vector3<u16>, albedo: f64) -> Plane {
+        Plane{ origin: origin, normal_vec: normal_vec, color: color, albedo: albedo}
     }
 }
 
@@ -36,12 +37,16 @@ impl Shape3D for Plane {
             // println!("{:?}", &ray.unit_vec);
             // println!("{:?}", ray.unit_vec.angle(&self.normal_vec));
             // println!("{:?}", normal);
-            return Some(Intersection::new(location, distance, normal, self.get_color()))
+            return Some(Intersection::new(location, distance, normal, self))
         }
         None
     }
 
-    fn get_color (&self) -> [u8; 3] {
+    fn get_color (&self) -> Vector3<u16> {
         return self.color;
+    }
+
+    fn get_albedo (&self) -> f64 {
+        return self.albedo;
     }
 }
