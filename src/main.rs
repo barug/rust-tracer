@@ -1,40 +1,60 @@
 extern crate image;
-use image::{RgbImage, RgbaImage, Rgb, Rgba, GenericImage, GenericImageView, Pixel, ImageBuffer};
-extern crate num_complex;
+use image::{ImageBuffer, Rgb};
 extern crate nalgebra as na;
-use na::Vector3;
+extern crate num_complex;
+extern crate clap;
+use clap::{App, Arg};
 
-mod drawing_2d;
 mod coordinates;
+mod drawing_2d;
 mod raytracer;
 use crate::raytracer::*;
-use crate::raytracer::camera::*;
 
 use std::fs;
-use std::fs::File;
-use std::io::prelude::*;
 
-
-fn save_scene(scene: &Scene, filename: String) -> std::io::Result<()> {
-    let serialized = serde_yaml::to_string(&scene).unwrap();
-
-    let mut file = fs::File::create(filename)?;
-    file.write_all(serialized.as_bytes())?;
-    Ok(())
-}
 
 fn main() -> std::io::Result<()> {
-    let imgx = 800;
-    let imgy = 800;
-    let mut imgbuf = ImageBuffer::<Rgb<u16>, Vec<u16>>::new(imgx, imgy);
+    let matches = App::new("rust-tracer")
+        .version("0.1")
+        .author("Barthélémy Gouby")
+        .about("Simple raytracer written in rust")
+        .arg(
+            Arg::with_name("SCENE")
+                .help("The scene configuration file")
+                .required(true)
+                .index(1),
+        )
+        .arg(
+            Arg::with_name("OUTPUT")
+                .help("the output path")
+                .required(true)
+                .index(2),
+        )
+        .arg(
+            Arg::with_name("dimensions")
+                .short("d")
+                .long("dimensions")
+                .value_name("WIDTHxHEIGHT")
+                .help("the dimension of the output image")
+                .takes_value(true)
+        )
+        .get_matches();
 
-    let conf = fs::read_to_string("scene.yml")?;
+
+    let scene_path = matches.value_of("SCENE").unwrap();
+    let output_path = matches.value_of("OUTPUT").unwrap();
+    let dimensions_str = matches.value_of("dimensions").unwrap_or("640x480");
+
+
+    let conf = fs::read_to_string(scene_path)?;
     let scene: Scene = serde_yaml::from_str(&conf).unwrap();
-    
+
+    let dimensions = dimensions_str.split('x').map(|s| s.parse::<u32>().unwrap()).collect::<Vec<u32>>();
+    let mut imgbuf = ImageBuffer::<Rgb<u16>, Vec<u16>>::new(dimensions[0], dimensions[1]);
+
     scene.render_scene(&mut imgbuf);
 
     // Save the image as test.png”, the format is deduced from the path
-    imgbuf.save("test3.png").unwrap();
+    imgbuf.save(output_path).unwrap();
     Ok(())
 }
-
