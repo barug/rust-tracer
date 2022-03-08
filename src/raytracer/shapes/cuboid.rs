@@ -67,10 +67,12 @@ impl Shape3D for Cuboid {
         }
 
         let location = &ray.origin + &ray.unit_vec * distance;
+        let normalized_location = &location - &self.position;
 
         // the normal is on the axis with the highest absolute value
         let mut normal: Vector3<f64> = Vector3::<f64>::zeros();
-        normal[location.iamax()] = 1.0;
+        let normal_abs: f64 = 1.0;
+        normal[normalized_location.iamax()] = normal_abs.copysign(normalized_location[normalized_location.iamax()]);
 
         return Some(Intersection::new(location, distance, normal, self))
     }
