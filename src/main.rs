@@ -54,7 +54,7 @@ fn main() -> std::io::Result<()> {
 
     scene.render_scene(&mut imgbuf);
 
-    // Save the image as test.png”, the format is deduced from the path
+    // the format is deduced from the file extension in the output_path
     imgbuf.save(output_path).unwrap();
     Ok(())
 }
