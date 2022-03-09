@@ -70,7 +70,7 @@ impl Scene {
 
             let reflection_shading: Vector3<u16> = if depth > 0 {
                 let reflection_vector = ray.unit_vec - 2.0 * intersection.normal.dot(&ray.unit_vec) * intersection.normal;
-                let reflection_origine = &intersection.location + 0.01 * &intersection.normal;
+                let reflection_origine = &intersection.location + 0.001 * &intersection.normal;
                 let reflection_ray = Ray::new_from_origine_and_direction(&reflection_origine, &reflection_vector);
 
                 self.trace_ray(reflection_ray, depth - 1).unwrap_or(Vector3::<u16>::from_element(0_u16))
