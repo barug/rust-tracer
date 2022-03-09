@@ -88,9 +88,9 @@ impl Scene {
     fn diffuse_shading(&self, intersection: &Intersection) -> Option<Vector3<u16>> {
 
         let albedo =  intersection.shape.get_albedo();
-        let shading_coefficient: f64 = self.lights.iter()
+        let ambiant_light = 0.2;
+        let diffuse_reflection: f64 = self.lights.iter()
             .map( |light| {
-
                 let origine = &intersection.location + 0.01 * &intersection.normal;
                 let reverse_lightray = Ray::new_from_origine_and_direction(&origine, &light.direction);
 
@@ -110,6 +110,7 @@ impl Scene {
                     0.0
                 }
             }).sum::<f64>();
+        let shading_coefficient: f64 = ambiant_light + diffuse_reflection;
         if shading_coefficient > 0.0 {
             let color = intersection.shape.get_color(); 
             let shaded_color: Vector3<u16> = [
