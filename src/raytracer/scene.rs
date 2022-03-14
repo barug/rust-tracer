@@ -6,6 +6,7 @@ use serde::{Serialize, Deserialize, Serializer};
 use super::{DistantLight, intersection, shapes::*};
 use super::camera::*;
 use super::ray::*;
+use rayon::prelude::*;
 
 
 use na::Vector3;
@@ -13,7 +14,7 @@ use na::Vector3;
 #[derive(Serialize, Deserialize)]
 pub struct Scene {
     pub camera: Camera,
-    pub shapes: Vec<Box<dyn Shape3D>>,
+    pub shapes: Vec<Box<dyn Shape3D + Sync>>,
     pub lights: Vec<DistantLight>
 }
 
@@ -38,7 +39,7 @@ impl Scene {
         let q_y = ((2.0 * g_y) / (dimy as f64 - 1.0)) * &v;
 
         let pixels: Vec<u16> = (0..num_pix)
-            .into_iter()
+            .into_par_iter()
             .flat_map(
                 |i| {
                     let pi_x: u32 = i % dimx;
@@ -130,7 +131,7 @@ impl Scene {
         None
     }
 
-    pub fn push_shape(&mut self, shape: Box<dyn Shape3D>) {
+    pub fn push_shape(&mut self, shape: Box<dyn Shape3D + Sync>) {
         self.shapes.push(shape);
     }
 }
