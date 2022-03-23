@@ -1,15 +1,20 @@
 extern crate image;
-use image::{RgbImage, Rgb, GenericImage, GenericImageView, Pixel, ImageBuffer};
-use intersection::Intersection;
-use serde::{Serialize, Deserialize, Serializer};
+use std::ops::Mul;
+
+use serde::{Serialize, Deserialize};
+use rayon::prelude::*;
+use indicatif::ParallelProgressIterator;
+
 
 use super::{DistantLight, intersection, shapes::*};
 use super::camera::*;
 use super::ray::*;
-use rayon::prelude::*;
+use super::utils::*;
+use intersection::Intersection;
 
 
-use na::Vector3;
+use na::{Vector3, Rotation3};
+use na::geometry::Rotation;
 
 #[derive(Serialize, Deserialize)]
 pub struct Scene {
@@ -39,7 +44,8 @@ impl Scene {
         let q_y = ((2.0 * g_y) / (dimy as f64 - 1.0)) * &v;
 
         let pixels: Vec<u16> = (0..num_pix)
-            .into_par_iter()
+            .into_par_iter() // create parralel iterator with rayon
+            .progress_count(num_pix as u64) 
             .flat_map(
                 |i| {
                     let pi_x: u32 = i % dimx;
@@ -48,20 +54,15 @@ impl Scene {
                     let pos_pix = &P_1_1 + &q_x * pi_x as f64 - &q_y * pi_y as f64;
                     let ray: Ray = Ray::new_from_points(&self.camera.cam_pos, &pos_pix);
                         
-                    let result = self.trace_ray(ray, 4);
-                    if let Some(shaded_color) = result {
-                        // (shaded_color.into::<[u16;3]>())
-                        <[u16;3]>::from(shaded_color.into())
-                    } else {
-                        [0,0,0]
-                    }
+                    let shaded_color = self.trace_ray(ray, 2);
+                    <[u16;3]>::from(shaded_color)
                 }
             ).collect();
         pixels
     }
 
 
-    fn trace_ray(&self, ray: Ray, depth: u8) -> Option<Vector3<u16>> {
+    fn trace_ray(&self, ray: Ray, depth: u8) -> Vector3<u16> {
         let result = self.shapes
         .iter()
         .flat_map(|shape| shape.ray_closest_intersections(&ray))
@@ -74,33 +75,41 @@ impl Scene {
         );
 
         if let Some(intersection) = &result {
-            let diffuse_shading: Vector3<u16> = self.diffuse_shading(intersection).unwrap_or(Vector3::<u16>::from_element(0_u16));
+            let diffuse_shading: Vector3<u16> = self.diffuse_shading(intersection);
+
+            let indirect_lighting = self.indirect_lighting(&intersection, depth);
 
             let reflection_shading: Vector3<u16> = if depth > 0 {
                 let reflection_vector = ray.unit_vec - 2.0 * intersection.normal.dot(&ray.unit_vec) * intersection.normal;
-                let reflection_origine = &intersection.location + 0.001 * &intersection.normal;
+                let reflection_origine = &intersection.biased_location;
                 let reflection_ray = Ray::new_from_origine_and_direction(&reflection_origine, &reflection_vector);
 
-                self.trace_ray(reflection_ray, depth - 1).unwrap_or(Vector3::<u16>::from_element(0_u16))
+                self.trace_ray(reflection_ray, depth - 1)
             } else {
                 Vector3::<u16>::from_element(0_u16)
             };
 
-            return Some(diffuse_shading + reflection_shading / 6)
+            return diffuse_shading + indirect_lighting + reflection_shading / 6
+            // return diffuse_shading + indirect_lighting
+            // return diffuse_shading
         }
         
-        None
+        Vector3::<u16>::from_element(0_u16)
     }
 
 
-    fn diffuse_shading(&self, intersection: &Intersection) -> Option<Vector3<u16>> {
+    fn diffuse_shading(&self, intersection: &Intersection) -> Vector3<u16> {
 
         let albedo =  intersection.shape.get_albedo();
-        let ambiant_light = 0.2;
+        // let ambiant_light = 0.2;
+        let ambiant_light = 0.0;
+        
         let diffuse_reflection: f64 = self.lights.iter()
             .map( |light| {
-                let origine = &intersection.location + 0.01 * &intersection.normal;
-                let reverse_lightray = Ray::new_from_origine_and_direction(&origine, &light.direction);
+                let origine = &intersection.biased_location;
+
+                let light_direction_inverse = -light.direction;
+                let reverse_lightray = Ray::new_from_origine_and_direction(&origine, &light_direction_inverse);
 
                 let is_obstructed = self.shapes.iter()
                     .any(
@@ -110,10 +119,11 @@ impl Scene {
                     return 0.0
                 }
 
-                let angle = light.direction.angle(&intersection.normal);
+                let angle = light_direction_inverse.angle(&intersection.normal);
                 if angle < (std::f64::consts::PI / 2.0) {
                     // 1.0 - (angle / (std::f64::consts::PI / 2.0))
                     albedo / std::f64::consts::PI * light.intensity * angle.cos()
+                    // albedo * light.intensity * angle.cos()
                 } else {
                     0.0
                 }
@@ -126,9 +136,36 @@ impl Scene {
                 (color[1] as f64 * shading_coefficient).min(65535.0) as u16,
                 (color[2] as f64 * shading_coefficient).min(65535.0) as u16
             ].into();
-            return Some(shaded_color);
+            return shaded_color;
         }
-        None
+        Vector3::<u16>::from_element(0_u16)
+    }
+
+    fn indirect_lighting(&self, intersection: &Intersection, depth: u8) -> Vector3<u16> {
+        if depth == 0 {
+            return Vector3::<u16>::from_element(0_u16)
+        }
+        let normal_coordinates_system = create_coordinate_system_from_up_vector(&intersection.normal);
+        let rotation = Rotation3::from_basis_unchecked(&normal_coordinates_system);
+        let nbr_of_samples = 200;
+        let indirect_lighting = (0..nbr_of_samples)
+            .into_iter()
+            .map(
+                |_| {
+                    let rand_direction = rotation * uniform_sampling_hemisphere();
+                    let ray: Ray = Ray::new_from_origine_and_direction(&intersection.biased_location, &rand_direction);
+                    let ray_angle = rand_direction.angle(&intersection.normal);
+                    let indirect_light_color = self.trace_ray(ray, depth - 1);
+                    indirect_light_color.cast::<f64>() * ray_angle.cos() 
+                }
+            // ).sum::<Vector3<f64>>() * 2.0 * std::f64::consts::PI / nbr_of_samples as f64;
+            ).sum::<Vector3<f64>>() /  (2.0 * nbr_of_samples as f64);
+
+        Vector3::<u16>::new(
+            indirect_lighting.x as u16,
+            indirect_lighting.y as u16,
+            indirect_lighting.z as u16
+        )
     }
 
     pub fn push_shape(&mut self, shape: Box<dyn Shape3D + Sync>) {
