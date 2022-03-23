@@ -164,8 +164,7 @@ impl Scene {
                     let indirect_light_color = self.trace_ray(ray, depth - 1);
                     indirect_light_color.component_mul(&intersection.shape.get_color()) * ray_angle.cos()
                 }
-            // ).sum::<Vector3<f64>>() * 2.0 * std::f64::consts::PI / nbr_of_samples as f64;
-            ).sum::<Vector3<f64>>() /  (2.0 * nbr_of_samples as f64);
+            ).sum::<Vector3<f64>>() /  nbr_of_samples as f64;
 
         indirect_lighting
     }
