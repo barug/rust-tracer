@@ -7,7 +7,7 @@ use crate::raytracer::Intersection;
 use na::Vector3;
 
 #[typetag::serde(tag = "type")]
-pub trait Shape3D : Sync
+pub trait Shape3D : Sync + std::fmt::Debug
 {
     // returns (intersection point, distance from camera to intersection, normal vector)
     fn ray_closest_intersections (&self, ray: &Ray) -> Option<Intersection>;
