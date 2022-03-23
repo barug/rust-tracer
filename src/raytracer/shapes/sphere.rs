@@ -12,7 +12,7 @@ use na::Vector3;
 pub struct Sphere {
     pub centre: Vector3<f64>,
     pub r: f64,
-    pub color: Vector3<u16>,
+    pub color: Vector3<f64>,
     pub albedo: f64
 }
 
@@ -25,7 +25,7 @@ impl Sphere {
     //     }
     // }
 
-    pub fn new(centre: Vector3<f64>, r: f64, color: Vector3<u16>, albedo: f64) -> Sphere {
+    pub fn new(centre: Vector3<f64>, r: f64, color: Vector3<f64>, albedo: f64) -> Sphere {
         Sphere {
             centre : centre,
             r: r,
@@ -67,7 +67,7 @@ impl Shape3D for Sphere {
         return None;
     }
 
-    fn get_color (&self) -> Vector3<u16> {
+    fn get_color (&self) -> Vector3<f64> {
         return self.color;
     }
 
