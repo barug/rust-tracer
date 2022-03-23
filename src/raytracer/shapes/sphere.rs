@@ -56,11 +56,11 @@ impl Shape3D for Sphere {
 
             if dist1 >= 0.0 && (dist2 < 0.0 || dist2 > dist1) {
                 let location: Vector3<f64> = &ray.origin + &ray.unit_vec * dist1;
-                let normal: Vector3<f64> = &location - &self.centre; 
+                let normal: Vector3<f64> = (&location - &self.centre).normalize(); 
                 return Some(Intersection::new(location, dist1, normal, self))
             } else if dist2 >= 0.0 {
                 let location: Vector3<f64> = &ray.origin + &ray.unit_vec * dist2;
-                let normal: Vector3<f64> = &location - &self.centre;
+                let normal: Vector3<f64> = (&location - &self.centre).normalize();
                 return Some(Intersection::new(location, dist2, normal, self))
             }
         }
