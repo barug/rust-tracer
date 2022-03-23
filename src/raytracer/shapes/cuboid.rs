@@ -10,12 +10,12 @@ use crate::raytracer::Intersection;
 pub struct Cuboid {
     pub position: Vector3<f64>,
     pub bounds: [Vector3<f64>; 2], 
-    pub color: Vector3<u16>,
+    pub color: Vector3<f64>,
     pub albedo: f64
 }
 
 impl Cuboid {
-    pub fn new(position: Vector3<f64>, bounds: [Vector3<f64>; 2], color: Vector3<u16>, albedo: f64) -> Cuboid {
+    pub fn new(position: Vector3<f64>, bounds: [Vector3<f64>; 2], color: Vector3<f64>, albedo: f64) -> Cuboid {
         Cuboid {
             position: position,
             bounds : bounds,
@@ -77,7 +77,7 @@ impl Shape3D for Cuboid {
         return Some(Intersection::new(location, distance, normal, self))
     }
 
-    fn get_color (&self) -> Vector3<u16> {
+    fn get_color (&self) -> Vector3<f64> {
         return self.color;
     }
 

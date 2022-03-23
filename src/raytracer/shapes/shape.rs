@@ -12,7 +12,7 @@ pub trait Shape3D : Sync + std::fmt::Debug
     // returns (intersection point, distance from camera to intersection, normal vector)
     fn ray_closest_intersections (&self, ray: &Ray) -> Option<Intersection>;
 
-    fn get_color (&self) -> Vector3<u16>;
+    fn get_color (&self) -> Vector3<f64>;
 
     fn get_albedo (&self) -> f64;
 }
