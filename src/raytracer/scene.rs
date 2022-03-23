@@ -162,7 +162,7 @@ impl Scene {
                     let ray: Ray = Ray::new_from_origine_and_direction(&intersection.biased_location, &rand_direction);
                     let ray_angle = rand_direction.angle(&intersection.normal);
                     let indirect_light_color = self.trace_ray(ray, depth - 1);
-                    indirect_light_color * ray_angle.cos() 
+                    indirect_light_color.component_mul(&intersection.shape.get_color()) * ray_angle.cos()
                 }
             // ).sum::<Vector3<f64>>() * 2.0 * std::f64::consts::PI / nbr_of_samples as f64;
             ).sum::<Vector3<f64>>() /  (2.0 * nbr_of_samples as f64);
