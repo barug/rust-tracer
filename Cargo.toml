@@ -14,3 +14,4 @@ serde_yaml = "0.8"
 typetag = "0.1"
 nalgebra = { version = "0.22.0", features = ["serde-serialize"] }
 clap = "2.33.3"
+rayon = "1.5.1"

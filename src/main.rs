@@ -50,9 +50,10 @@ fn main() -> std::io::Result<()> {
     let scene: Scene = serde_yaml::from_str(&conf).unwrap();
 
     let dimensions = dimensions_str.split('x').map(|s| s.parse::<u32>().unwrap()).collect::<Vec<u32>>();
-    let mut imgbuf = ImageBuffer::<Rgb<u16>, Vec<u16>>::new(dimensions[0], dimensions[1]);
+    // let mut imgbuf = ImageBuffer::<Rgb<u16>, Vec<u16>>::new(dimensions[0], dimensions[1]);
 
-    scene.render_scene(&mut imgbuf);
+    let raw_pixels = scene.render_scene(dimensions[0], dimensions[1]);
+    let imgbuf = ImageBuffer::<Rgb<u16>, Vec<u16>>::from_vec(dimensions[0], dimensions[1], raw_pixels).unwrap();
 
     // the format is deduced from the file extension in the output_path
     imgbuf.save(output_path).unwrap();
