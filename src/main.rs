@@ -14,25 +14,6 @@ use std::fs;
 
 
 fn main() -> std::io::Result<()> {
-    // use std::fs::File;
-    // use std::io::prelude::*;
-
-    // use na::{Vector3, Rotation3};
-
-
-    // let mut file = File::create("points2.txt")?;
-
-    // let up_vector = Vector3::<f64>::new(1.0, 0.0, 0.0);
-    // let normal_coordinates_system = create_coordinate_system_from_up_vector(&up_vector);
-    // let rotation = Rotation3::from_basis_unchecked(&normal_coordinates_system);
-
-    // for _ in 0..500 {
-    //     let sample = rotation * uniform_sampling_hemisphere();
-    //     let str = serde_yaml::to_string(&sample).unwrap();
-    //     file.write_fmt(format_args!("{}, {}, {}\n", sample.x, sample.y, sample.z));
-    // }
-
-
     let matches = App::new("rust-tracer")
         .version("0.1")
         .author("Barthélémy Gouby")
@@ -69,7 +50,6 @@ fn main() -> std::io::Result<()> {
     let scene: Scene = serde_yaml::from_str(&conf).unwrap();
 
     let dimensions = dimensions_str.split('x').map(|s| s.parse::<u32>().unwrap()).collect::<Vec<u32>>();
-    // let mut imgbuf = ImageBuffer::<Rgb<u16>, Vec<u16>>::new(dimensions[0], dimensions[1]);
 
     let raw_pixels = scene.render_scene(dimensions[0], dimensions[1]);
     let imgbuf = ImageBuffer::<Rgb<u16>, Vec<u16>>::from_vec(dimensions[0], dimensions[1], raw_pixels).unwrap();
