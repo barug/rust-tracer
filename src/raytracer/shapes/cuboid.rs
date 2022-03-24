@@ -11,17 +11,21 @@ pub struct Cuboid {
     pub position: Vector3<f64>,
     pub bounds: [Vector3<f64>; 2], 
     pub color: Vector3<f64>,
-    pub albedo: f64
+    pub emissive_color: Vector3<f64>,
+    pub albedo: f64,
+    pub reflectivity: f64
 }
 
 impl Cuboid {
-    pub fn new(position: Vector3<f64>, bounds: [Vector3<f64>; 2], color: Vector3<f64>, albedo: f64) -> Cuboid {
-        Cuboid {
-            position: position,
-            bounds : bounds,
-            color: color,
-            albedo: albedo
-        }
+    pub fn new(
+        position: Vector3<f64>, 
+        bounds: [Vector3<f64>; 2], 
+        color: Vector3<f64>,  
+        emissive_color: Vector3<f64>, 
+        albedo: f64,
+        reflectivity: f64
+    ) -> Cuboid {
+        Cuboid {position, bounds, color, emissive_color, albedo, reflectivity}
     }
 }
 
@@ -81,7 +85,15 @@ impl Shape3D for Cuboid {
         return self.color;
     }
 
+    fn get_emissive_color (&self) -> Vector3<f64> {
+        return self.emissive_color;
+    }
+
     fn get_albedo (&self) -> f64 {
         return self.albedo;
+    }
+
+    fn get_reflectivity(&self) -> f64 {
+        return self.reflectivity;
     }
 }

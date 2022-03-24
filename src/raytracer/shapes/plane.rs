@@ -10,12 +10,21 @@ pub struct Plane {
     pub origin: Vector3<f64>,
     pub normal_vec: Vector3<f64>,
     pub color: Vector3<f64>,
-    albedo: f64
+    pub emissive_color: Vector3<f64>,
+    albedo: f64,
+    pub reflectivity: f64
 }
 
 impl Plane {
-    pub fn new(origin: Vector3<f64>, normal_vec: Vector3<f64>, color: Vector3<f64>, albedo: f64) -> Plane {
-        Plane{ origin: origin, normal_vec: normal_vec, color: color, albedo: albedo}
+    pub fn new(
+        origin: Vector3<f64>, 
+        normal_vec: Vector3<f64>, 
+        color: Vector3<f64>, 
+        emissive_color: Vector3<f64>, 
+        albedo: f64, 
+        reflectivity : f64
+    ) -> Plane {
+        Plane{ origin, normal_vec, color, emissive_color, albedo, reflectivity}
     }
 }
 
@@ -46,7 +55,15 @@ impl Shape3D for Plane {
         return self.color;
     }
 
+    fn get_emissive_color (&self) -> Vector3<f64> {
+        return self.emissive_color;
+    }
+
     fn get_albedo (&self) -> f64 {
         return self.albedo;
+    }
+
+    fn get_reflectivity(&self) -> f64 {
+        return self.reflectivity;
     }
 }
