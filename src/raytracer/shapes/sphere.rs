@@ -1,4 +1,3 @@
-use image::Rgb;
 use serde::{Serialize, Deserialize};
 
 use super::shape::*; 

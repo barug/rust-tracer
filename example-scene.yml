@@ -13,6 +13,7 @@ camera:
     - 1.0
     - 0.0
 shapes:
+  # floor
   - type: Plane
     origin:
       - 0.0
@@ -26,21 +27,124 @@ shapes:
       - 1.0
       - 1.0
       - 0.5
+    emissive_color:
+      - 0.0
+      - 0.0
+      - 0.0
     albedo: 0.5
-  # - type: Plane
-  #   origin:
-  #     - 0.0
-  #     - 0.0
-  #     - 30.0
-  #   normal_vec:
-  #     - -1.0
-  #     - 0.0
-  #     - 0.0
-  #   color:
-  #     - 30000
-  #     - 20000
-  #     - 15000
-  #   albedo: 0.18
+    reflectivity: 0.0
+  # front wall
+  - type: Plane
+    origin:
+      - 0.0
+      - 0.0
+      - 14.0
+    normal_vec:
+      - 0.0
+      - 0.0
+      - -1.0
+    color:
+      - 0.5
+      - 0.5
+      - 1.0
+    emissive_color:
+      - 0.0
+      - 0.0
+      - 0.0
+    albedo: 0.5
+    reflectivity: 0.0
+  # back wall
+  - type: Plane
+    origin:
+      - 0.0
+      - 0.0
+      - -11.0
+    normal_vec:
+      - 0.0
+      - 0.0
+      - 1.0
+    color:
+      - 0.5
+      - 0.5
+      - 0.5
+    emissive_color:
+      - 0.0
+      - 0.0
+      - 0.0
+    albedo: 0.5
+    reflectivity: 0.0
+  # right wall
+  - type: Plane
+    origin:
+      - 5.0
+      - 0.0
+      - 0.0
+    normal_vec:
+      - -1.0
+      - 0.0
+      - 0.0
+    color:
+      - 0.5
+      - 0.5
+      - 0.5
+    emissive_color:
+      - 0.0
+      - 0.0
+      - 0.0
+    albedo: 0.5
+    reflectivity: 0.0
+  # left wall
+  - type: Plane
+    origin:
+      - -12.0
+      - 0.0
+      - 0.0
+    normal_vec:
+      - 1.0
+      - 0.0
+      - 0.0
+    color:
+      - 0.5
+      - 0.5
+      - 0.5
+    emissive_color:
+      - 0.0
+      - 0.0
+      - 0.0
+    albedo: 0.5
+    reflectivity: 0.0
+  - type: Sphere
+    centre:
+      - -4.0
+      - 5.0
+      - 8.0
+    r: 0.5
+    color:
+      - 0.0
+      - 0.0
+      - 0.0
+    emissive_color:
+      - 25.0
+      - 25.0
+      - 25.0
+    albedo: 0.0
+    reflectivity: 0.0
+  - type: Sphere
+    centre:
+      - -6.0
+      - 5.0
+      - 7.0
+    r: 1.0
+    color:
+      - 0.5
+      - 1.0
+      - 0.75
+    emissive_color:
+      - 0.0
+      - 0.0
+      - 0.0
+    albedo: 1.0
+    reflectivity: 0.0
   - type: Sphere
     centre:
       - 0.0
@@ -51,11 +155,17 @@ shapes:
       - 0.5
       - 1.0
       - 0.75
-    albedo: 0.75
+    emissive_color:
+      - 0.0
+      - 0.0
+      - 0.0
+    albedo: 0.0
+    reflectivity: 1.0
+
   - type: Cuboid
     position:
       - -7.0
-      - 3.0
+      - 1.0
       - 8.0
     bounds:
       - - -2.0
@@ -68,48 +178,11 @@ shapes:
       - 1.0
       - 0
       - 1.0
-    albedo: 0.75
-  # - type: Sphere
-  #   centre:
-  #     - 3.0
-  #     - 0.0
-  #     - 7.0
-  #   r: 2.0
-  #   color:
-  #     - 30000
-  #     - 15000
-  #     - 30000
-  #   albedo: 0.18
-  # - type: Cuboid
-  #   position:
-  #     - 4.0
-  #     - 0.0
-  #     - 5.0
-  #   bounds:
-  #     - - -1.0
-  #       - -1.0
-  #       - -1.0
-  #     - - 1.0
-  #       - 1.0
-  #       - 1.0
-  #   color:
-  #     - 30000
-  #     - 0
-  #     - 30000
-  #   albedo: 0.18
-lights:
-  - direction:
-    - -1.0
-    - -1.5
-    - 0.0
-    intensity: 3.0
-  - direction:
-    - 0.5
-    - -1.5
-    - -0.0
-    intensity: 2.0
-  # - direction:
-  #   - 1.5
-  #   - -3.0
-  #   - -0.0
-  #   intensity: 1.0
+    emissive_color:
+      - 0.0
+      - 0.0
+      - 0.0
+    albedo: 1.0
+    reflectivity: 0.0
+
+distant_lights: []

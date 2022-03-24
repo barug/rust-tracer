@@ -5,8 +5,6 @@ extern crate num_complex;
 extern crate clap;
 use clap::{App, Arg};
 
-mod coordinates;
-mod drawing_2d;
 mod raytracer;
 use crate::raytracer::*;
 

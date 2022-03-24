@@ -1,5 +1,4 @@
 extern crate image;
-use std::ops::Mul;
 
 use serde::{Serialize, Deserialize};
 use rayon::prelude::*;
@@ -14,13 +13,12 @@ use intersection::Intersection;
 
 
 use na::{Vector3, Rotation3};
-use na::geometry::Rotation;
 
 #[derive(Serialize, Deserialize)]
 pub struct Scene {
     pub camera: Camera,
     pub shapes: Vec<Box<dyn Shape3D + Sync>>,
-    pub lights: Vec<DistantLight>
+    pub distant_lights: Vec<DistantLight>
 }
 
 impl Scene {
@@ -107,7 +105,7 @@ impl Scene {
 
         let albedo =  intersection.shape.get_albedo();
         
-        let diffuse_reflection: f64 = self.lights.iter()
+        let diffuse_reflection: f64 = self.distant_lights.iter()
             .map( |light| {
                 let origine = &intersection.biased_location;
 
