@@ -13,25 +13,21 @@ pub struct Sphere {
     pub centre: Vector3<f64>,
     pub r: f64,
     pub color: Vector3<f64>,
-    pub albedo: f64
+    pub emissive_color: Vector3<f64>,
+    pub albedo: f64,
+    pub reflectivity: f64
 }
 
 impl Sphere {
-
-    // pub fn new(x :f64, y: f64, z: f64, r: f64) -> Sphere {
-    //     Sphere {
-    //         centre : Coordinates3D::new(x, y, z),
-    //         r: r
-    //     }
-    // }
-
-    pub fn new(centre: Vector3<f64>, r: f64, color: Vector3<f64>, albedo: f64) -> Sphere {
-        Sphere {
-            centre : centre,
-            r: r,
-            color: color,
-            albedo: albedo
-        }
+    pub fn new(
+        centre: Vector3<f64>, 
+        r: f64, 
+        color: Vector3<f64>, 
+        emissive_color: Vector3<f64>, 
+        albedo: f64,
+        reflectivity: f64
+    ) -> Sphere {
+        Sphere {centre, r, color, emissive_color, albedo, reflectivity}
     }
 }
 
@@ -71,7 +67,15 @@ impl Shape3D for Sphere {
         return self.color;
     }
 
+    fn get_emissive_color (&self) -> Vector3<f64> {
+        return self.emissive_color;
+    }
+
     fn get_albedo (&self) -> f64 {
         return self.albedo;
+    }
+
+    fn get_reflectivity(&self) -> f64 {
+        return self.reflectivity;
     }
 }

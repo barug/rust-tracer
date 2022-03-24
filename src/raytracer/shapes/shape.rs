@@ -14,5 +14,9 @@ pub trait Shape3D : Sync + std::fmt::Debug
 
     fn get_color (&self) -> Vector3<f64>;
 
-    fn get_albedo (&self) -> f64;
+    fn get_emissive_color(&self) -> Vector3<f64>;
+
+    fn get_albedo(&self) -> f64;
+
+    fn get_reflectivity(&self) -> f64;
 }
