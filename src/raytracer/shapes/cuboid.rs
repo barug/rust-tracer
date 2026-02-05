@@ -97,3 +97,174 @@ impl Shape3D for Cuboid {
         return self.reflectivity;
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const EPSILON: f64 = 1e-10;
+
+    fn create_test_cuboid() -> Cuboid {
+        Cuboid::new(
+            Vector3::new(0.0, 0.0, 5.0),  // position at z=5
+            [
+                Vector3::new(-1.0, -1.0, -1.0),  // min bounds
+                Vector3::new(1.0, 1.0, 1.0),     // max bounds (2x2x2 cube)
+            ],
+            Vector3::new(1.0, 0.0, 1.0),  // magenta
+            Vector3::new(0.0, 0.0, 0.0),  // no emission
+            0.5,
+            0.0,
+        )
+    }
+
+    #[test]
+    fn test_cuboid_ray_hit_front_face() {
+        let cuboid = create_test_cuboid();
+        let ray = Ray::new_from_origine_and_direction(
+            &Vector3::new(0.0, 0.0, 0.0),
+            &Vector3::new(0.0, 0.0, 1.0),  // shoot along Z
+        );
+        
+        let intersection = cuboid.ray_closest_intersections(&ray);
+        assert!(intersection.is_some());
+        
+        let hit = intersection.unwrap();
+        // Cuboid at z=5 with bounds -1 to 1, so front face is at z=4
+        assert!((hit.distance - 4.0).abs() < EPSILON);
+        assert!((hit.location.z - 4.0).abs() < EPSILON);
+    }
+
+    #[test]
+    fn test_cuboid_ray_hit_side_face() {
+        let cuboid = create_test_cuboid();
+        let ray = Ray::new_from_origine_and_direction(
+            &Vector3::new(-5.0, 0.0, 5.0),  // to the left of cuboid
+            &Vector3::new(1.0, 0.0, 0.0),   // shoot along X
+        );
+        
+        let intersection = cuboid.ray_closest_intersections(&ray);
+        assert!(intersection.is_some());
+        
+        let hit = intersection.unwrap();
+        // Should hit left face at x=-1 (relative to position, so world x=-1)
+        assert!((hit.distance - 4.0).abs() < EPSILON);
+    }
+
+    #[test]
+    fn test_cuboid_ray_miss() {
+        let cuboid = create_test_cuboid();
+        let ray = Ray::new_from_origine_and_direction(
+            &Vector3::new(0.0, 0.0, 0.0),
+            &Vector3::new(1.0, 0.0, 0.0),  // shoot along X, cuboid is at z=5
+        );
+        
+        let intersection = cuboid.ray_closest_intersections(&ray);
+        assert!(intersection.is_none());
+    }
+
+    #[test]
+    fn test_cuboid_ray_miss_opposite_direction() {
+        let cuboid = create_test_cuboid();
+        let ray = Ray::new_from_origine_and_direction(
+            &Vector3::new(0.0, 0.0, 0.0),
+            &Vector3::new(0.0, 0.0, -1.0),  // shoot away from cuboid
+        );
+        
+        let intersection = cuboid.ray_closest_intersections(&ray);
+        assert!(intersection.is_none());
+    }
+
+    #[test]
+    fn test_cuboid_normal_front_face() {
+        let cuboid = create_test_cuboid();
+        let ray = Ray::new_from_origine_and_direction(
+            &Vector3::new(0.0, 0.0, 0.0),
+            &Vector3::new(0.0, 0.0, 1.0),
+        );
+        
+        let hit = cuboid.ray_closest_intersections(&ray).unwrap();
+        // Normal should point toward camera (negative Z)
+        assert!((hit.normal.z - (-1.0)).abs() < EPSILON);
+    }
+
+    #[test]
+    fn test_cuboid_normal_top_face() {
+        let cuboid = create_test_cuboid();
+        let ray = Ray::new_from_origine_and_direction(
+            &Vector3::new(0.0, 5.0, 5.0),   // above the cuboid
+            &Vector3::new(0.0, -1.0, 0.0),  // shoot downward
+        );
+        
+        let hit = cuboid.ray_closest_intersections(&ray).unwrap();
+        // Normal should point upward (positive Y)
+        assert!((hit.normal.y - 1.0).abs() < EPSILON);
+    }
+
+    #[test]
+    fn test_cuboid_diagonal_hit() {
+        let cuboid = create_test_cuboid();
+        let ray = Ray::new_from_origine_and_direction(
+            &Vector3::new(-5.0, 5.0, 0.0),
+            &Vector3::new(1.0, -1.0, 1.0).normalize(),
+        );
+        
+        let intersection = cuboid.ray_closest_intersections(&ray);
+        assert!(intersection.is_some());
+    }
+
+    #[test]
+    fn test_cuboid_ray_along_edge_miss() {
+        let cuboid = create_test_cuboid();
+        // Ray that passes just outside the cuboid
+        let ray = Ray::new_from_origine_and_direction(
+            &Vector3::new(2.0, 0.0, 0.0),   // offset by more than bounds
+            &Vector3::new(0.0, 0.0, 1.0),
+        );
+        
+        let intersection = cuboid.ray_closest_intersections(&ray);
+        assert!(intersection.is_none());
+    }
+
+    #[test]
+    fn test_cuboid_get_color() {
+        let cuboid = create_test_cuboid();
+        let color = cuboid.get_color();
+        assert_eq!(color, Vector3::new(1.0, 0.0, 1.0));
+    }
+
+    #[test]
+    fn test_cuboid_get_albedo() {
+        let cuboid = create_test_cuboid();
+        assert!((cuboid.get_albedo() - 0.5).abs() < EPSILON);
+    }
+
+    #[test]
+    fn test_cuboid_get_reflectivity() {
+        let cuboid = create_test_cuboid();
+        assert!(cuboid.get_reflectivity().abs() < EPSILON);
+    }
+
+    #[test]
+    fn test_cuboid_asymmetric_bounds() {
+        let cuboid = Cuboid::new(
+            Vector3::new(0.0, 0.0, 0.0),
+            [
+                Vector3::new(-1.0, -2.0, -3.0),
+                Vector3::new(1.0, 2.0, 3.0),
+            ],
+            Vector3::new(1.0, 1.0, 1.0),
+            Vector3::new(0.0, 0.0, 0.0),
+            0.5,
+            0.0,
+        );
+        
+        let ray = Ray::new_from_origine_and_direction(
+            &Vector3::new(0.0, 0.0, -10.0),
+            &Vector3::new(0.0, 0.0, 1.0),
+        );
+        
+        let hit = cuboid.ray_closest_intersections(&ray).unwrap();
+        assert!((hit.location.z - (-3.0)).abs() < EPSILON);
+    }
+}
